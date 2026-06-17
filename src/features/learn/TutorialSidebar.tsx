@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
+import { useGitStore, SCENARIOS } from "./GitEngine";
 
 type Command = {
   command: string;
@@ -192,109 +193,153 @@ const gitCourse: Module[] = [
 ];
 
 export const TutorialSidebar = () => {
+  const [activeTab, setActiveTab] = useState<'scenarios' | 'reference'>('scenarios');
   const [openModule, setOpenModule] = useState<number>(0);
   const [openTopic, setOpenTopic] = useState<string | null>("Git Introduction");
+  
+  const git = useGitStore();
+
+  const handleCommandClick = (cmd: string) => {
+    git.setTerminalInput(cmd);
+  };
 
   return (
     <aside className="w-80 flex flex-col border-r border-[#30363d] bg-[#0d1117] shrink-0 h-full overflow-hidden">
-      {/* Header */}
-      <div className="p-4 border-b border-[#30363d]">
-        <h2 className="text-lg font-bold text-white flex items-center gap-2">
-          <span className="material-symbols-outlined text-[#256af4]">menu_book</span>
-          Git Reference
-        </h2>
-        <p className="text-xs text-gray-500 mt-1">Complete command reference</p>
+      {/* Header Tabs */}
+      <div className="flex border-b border-[#30363d]">
+        <button 
+          onClick={() => setActiveTab('scenarios')}
+          className={clsx(
+            "flex-1 py-3 text-sm font-bold border-b-2 transition-colors",
+            activeTab === 'scenarios' ? "border-[#256af4] text-[#256af4]" : "border-transparent text-gray-500 hover:text-gray-300"
+          )}
+        >
+          Scenarios
+        </button>
+        <button 
+          onClick={() => setActiveTab('reference')}
+          className={clsx(
+            "flex-1 py-3 text-sm font-bold border-b-2 transition-colors",
+            activeTab === 'reference' ? "border-[#256af4] text-[#256af4]" : "border-transparent text-gray-500 hover:text-gray-300"
+          )}
+        >
+          Reference
+        </button>
       </div>
 
-      {/* Modules List */}
       <div className="flex-1 overflow-y-auto">
-        {gitCourse.map((module, moduleIdx) => (
-          <div key={module.name} className="border-b border-[#30363d]/50">
-            {/* Module Header */}
-            <button
-              onClick={() => setOpenModule(openModule === moduleIdx ? -1 : moduleIdx)}
-              className={clsx(
-                "w-full flex items-center justify-between px-4 py-3 hover:bg-[#161b22] transition-colors",
-                openModule === moduleIdx && "bg-[#161b22]"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <span className={clsx(
-                  "material-symbols-outlined text-lg",
-                  openModule === moduleIdx ? "text-[#256af4]" : "text-gray-500"
-                )}>
-                  {module.icon}
-                </span>
-                <span className={clsx(
-                  "font-medium text-sm",
-                  openModule === moduleIdx ? "text-white" : "text-gray-300"
-                )}>
-                  {module.name}
-                </span>
-              </div>
-              <ChevronDown 
-                size={16} 
-                className={clsx(
-                  "text-gray-500 transition-transform",
-                  openModule === moduleIdx && "rotate-180 text-[#256af4]"
-                )} 
-              />
-            </button>
-
-            {/* Topics */}
-            {openModule === moduleIdx && (
-              <div className="bg-[#0d1117] pb-2">
-                {module.topics.map((topic) => (
-                  <div key={topic.title}>
-                    {/* Topic Header */}
-                    <button
-                      onClick={() => setOpenTopic(openTopic === topic.title ? null : topic.title)}
-                      className={clsx(
-                        "w-full flex items-center justify-between pl-11 pr-4 py-2 text-left hover:bg-[#161b22]/50 transition-colors",
-                        openTopic === topic.title && "bg-[#256af4]/10"
-                      )}
-                    >
-                      <span className={clsx(
-                        "text-sm",
-                        openTopic === topic.title ? "text-[#256af4] font-medium" : "text-gray-400"
-                      )}>
-                        {topic.title}
-                      </span>
-                      <span className="text-[10px] text-gray-600 bg-[#21262d] px-1.5 py-0.5 rounded">
-                        {topic.commands.length}
-                      </span>
-                    </button>
-
-                    {/* Commands */}
-                    {openTopic === topic.title && (
-                      <div className="pl-11 pr-4 pb-3 space-y-2">
-                        {topic.commands.map((cmd, idx) => (
-                          <div 
-                            key={idx}
-                            className="bg-[#161b22] border border-[#30363d]/50 rounded-lg p-2.5 hover:border-[#256af4]/50 transition-colors cursor-pointer group"
-                          >
-                            <code className="text-xs font-mono text-green-400 block mb-1 group-hover:text-green-300">
-                              {cmd.command}
-                            </code>
-                            <span className="text-[11px] text-gray-500">
-                              {cmd.description}
-                            </span>
+        {activeTab === 'scenarios' ? (
+          <div className="p-4 space-y-4">
+            {SCENARIOS.map((scenario) => {
+              const isCompleted = git.completedScenarios.includes(scenario.id);
+              const isActive = git.currentScenarioId === scenario.id;
+              
+              return (
+                <div 
+                  key={scenario.id} 
+                  className={clsx(
+                    "border rounded-xl p-4 transition-all",
+                    isActive ? "border-[#256af4] bg-[#256af4]/5 shadow-[0_0_15px_rgba(37,106,244,0.15)]" : "border-[#30363d] bg-[#161b22]",
+                    isCompleted && !isActive && "opacity-70"
+                  )}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className={clsx("font-bold text-sm", isActive ? "text-white" : "text-gray-300")}>
+                      {scenario.title}
+                    </h3>
+                    {isCompleted && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
+                  </div>
+                  <p className="text-xs text-gray-400 mb-4">{scenario.description}</p>
+                  
+                  {isActive ? (
+                    <div className="bg-[#0d1117] rounded-lg p-3 border border-[#30363d]/50">
+                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Suggested Commands</p>
+                      <div className="space-y-2">
+                        {scenario.hints.map((hint, i) => (
+                          <div key={i} className="text-xs text-gray-300 flex items-start gap-2">
+                            <span className="text-[#256af4] mt-0.5">•</span>
+                            <span>{hint}</span>
                           </div>
                         ))}
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => git.setScenario(scenario.id)}
+                      className="text-xs text-[#256af4] hover:text-blue-400 font-medium"
+                    >
+                      {isCompleted ? "Replay Scenario" : "Start Scenario"}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        ))}
+        ) : (
+          <div>
+            {/* Existing Reference List */}
+            {gitCourse.map((module, moduleIdx) => (
+              <div key={module.name} className="border-b border-[#30363d]/50">
+                <button
+                  onClick={() => setOpenModule(openModule === moduleIdx ? -1 : moduleIdx)}
+                  className={clsx(
+                    "w-full flex items-center justify-between px-4 py-3 hover:bg-[#161b22] transition-colors",
+                    openModule === moduleIdx && "bg-[#161b22]"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <span className={clsx(
+                      "material-symbols-outlined text-lg",
+                      openModule === moduleIdx ? "text-[#256af4]" : "text-gray-500"
+                    )}>{module.icon}</span>
+                    <span className={clsx(
+                      "font-medium text-sm",
+                      openModule === moduleIdx ? "text-white" : "text-gray-300"
+                    )}>{module.name}</span>
+                  </div>
+                  <ChevronDown size={16} className={clsx("text-gray-500 transition-transform", openModule === moduleIdx && "rotate-180 text-[#256af4]")} />
+                </button>
+                {openModule === moduleIdx && (
+                  <div className="bg-[#0d1117] pb-2">
+                    {module.topics.map((topic) => (
+                      <div key={topic.title}>
+                        <button
+                          onClick={() => setOpenTopic(openTopic === topic.title ? null : topic.title)}
+                          className={clsx(
+                            "w-full flex items-center justify-between pl-11 pr-4 py-2 text-left hover:bg-[#161b22]/50 transition-colors",
+                            openTopic === topic.title && "bg-[#256af4]/10"
+                          )}
+                        >
+                          <span className={clsx("text-sm", openTopic === topic.title ? "text-[#256af4] font-medium" : "text-gray-400")}>{topic.title}</span>
+                          <span className="text-[10px] text-gray-600 bg-[#21262d] px-1.5 py-0.5 rounded">{topic.commands.length}</span>
+                        </button>
+                        {openTopic === topic.title && (
+                          <div className="pl-11 pr-4 pb-3 space-y-2">
+                            {topic.commands.map((cmd, idx) => (
+                              <div 
+                                key={idx}
+                                onClick={() => handleCommandClick(cmd.command)}
+                                className="bg-[#161b22] border border-[#30363d]/50 rounded-lg p-2.5 hover:border-[#256af4]/50 transition-colors cursor-pointer group"
+                              >
+                                <code className="text-xs font-mono text-green-400 block mb-1 group-hover:text-green-300">{cmd.command}</code>
+                                <span className="text-[11px] text-gray-500">{cmd.description}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* Footer */}
       <div className="p-3 border-t border-[#30363d] bg-[#0d1117]">
         <p className="text-[10px] text-gray-600 text-center">
-          Try commands in the terminal →
+          {activeTab === 'scenarios' ? "Complete the goal to advance!" : "Click any command to try it"}
         </p>
       </div>
     </aside>

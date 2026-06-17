@@ -18,6 +18,10 @@
   --font-sans: var(--font-inter);
   
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 4s ease-in-out infinite;
+  --animate-float-delayed: float 4s ease-in-out 2s infinite;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-slide-up: slideUp 0.5s ease-out forwards;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -62,7 +66,31 @@ body {
   100% { background-position: 0% 50%; }
 }
 
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(37,106,244,0.2), 0 0 20px rgba(37,106,244,0.2); }
+  to { box-shadow: 0 0 20px rgba(37,106,244,0.6), 0 0 30px rgba(37,106,244,0.4); }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 .animate-gradient {
   background-size: 200% 200%;
   animation: gradient 4s ease infinite;
+}
+
+.glassmorphism {
+  background: rgba(22, 27, 34, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.glassmorphism-card {
+  background: linear-gradient(145deg, rgba(37, 106, 244, 0.05) 0%, rgba(16, 22, 34, 0.6) 100%);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }

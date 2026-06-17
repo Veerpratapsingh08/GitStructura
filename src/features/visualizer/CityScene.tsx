@@ -2,12 +2,12 @@
 
 import React, { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text, Html, RoundedBox } from "@react-three/drei";
+import { OrbitControls, Text, Html, RoundedBox, Stars, Sparkles, Instances, Instance } from "@react-three/drei";
 import { RepoFile } from "./Fetcher";
 import { buildTreemap, TreemapNode } from "./CityBuilder";
 import * as THREE from "three";
 
-const FileBlock = ({ 
+const FileInstanceBlock = ({ 
   node, 
   maxSize,
   onHover 
@@ -16,10 +16,8 @@ const FileBlock = ({
   maxSize: number;
   onHover: (node: TreemapNode | null) => void;
 }) => {
-  const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const [active, setActive] = useState(false);
-
+  
   const baseHeight = 0.5;
   const maxHeight = 15;
   const height = baseHeight + (Math.log(node.size + 1) / Math.log(maxSize + 1)) * maxHeight;
@@ -28,58 +26,33 @@ const FileBlock = ({
   const centerZ = node.y + node.height / 2;
 
   React.useEffect(() => {
-    const timer = setTimeout(() => setActive(true), Math.random() * 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  React.useEffect(() => {
     document.body.style.cursor = hovered ? 'pointer' : 'auto';
     return () => { document.body.style.cursor = 'auto'; };
   }, [hovered]);
-
-  useFrame((_, delta) => {
-    if (!meshRef.current) return;
-    const targetY = active ? height / 2 : 0;
-    const targetScale = active ? 1 : 0;
-    meshRef.current.position.y = THREE.MathUtils.damp(meshRef.current.position.y, targetY, 6, delta);
-    meshRef.current.scale.y = THREE.MathUtils.damp(meshRef.current.scale.y, targetScale, 6, delta);
-    
-    const hoverScale = hovered ? 1.02 : 1;
-    meshRef.current.scale.x = THREE.MathUtils.damp(meshRef.current.scale.x, hoverScale, 10, delta);
-    meshRef.current.scale.z = THREE.MathUtils.damp(meshRef.current.scale.z, hoverScale, 10, delta);
-  });
 
   if (node.width < 1 || node.height < 1) return null;
 
   return (
     <group position={[centerX, 0, centerZ]}>
-      <mesh
-        ref={meshRef}
-        position={[0, 0, 0]}
+      <Instance
+        position={[0, height / 2, 0]}
+        scale={[node.width * 0.92, height, node.height * 0.92]}
+        color={hovered ? "#60a5fa" : node.color}
         onPointerOver={(e) => { e.stopPropagation(); setHovered(true); onHover(node); }}
         onPointerOut={() => { setHovered(false); onHover(null); }}
-      >
-        <boxGeometry args={[node.width * 0.92, height, node.height * 0.92]} />
-        <meshStandardMaterial
-          color={hovered ? "#60a5fa" : node.color}
-          roughness={0.3}
-          metalness={0.1}
-          emissive={hovered ? node.color : "#000"}
-          emissiveIntensity={hovered ? 0.3 : 0}
-        />
-      </mesh>
+      />
       
       {hovered && (
-        <Html distanceFactor={50} center position={[0, height + 3, 0]}>
-          <div className="bg-[#0d1117]/98 text-white p-4 rounded-xl whitespace-nowrap border border-blue-500/60 shadow-2xl backdrop-blur-xl pointer-events-none min-w-[1000px]">
+        <Html distanceFactor={50} center position={[0, height + 3, 0]} zIndexRange={[100, 0]}>
+          <div className="bg-[#0d1117]/98 text-white p-4 rounded-xl border border-blue-500/60 shadow-2xl backdrop-blur-xl pointer-events-none min-w-[250px] max-w-[400px]">
             <div className="font-bold text-blue-300 text-base mb-2 flex items-center gap-3">
-              <span className="w-4 h-4 rounded" style={{ backgroundColor: node.color }}></span>
-              {node.name}
+              <span className="w-4 h-4 rounded shrink-0" style={{ backgroundColor: node.color }}></span>
+              <span className="truncate">{node.name}</span>
             </div>
-            <div className="text-sm text-slate-300 mb-1">
+            <div className="text-sm text-slate-300 mb-2">
               <span className="text-slate-500">Size:</span> {(node.size / 1024).toFixed(1)} KB
             </div>
-            <div className="text-xs text-slate-500 font-mono bg-black/30 px-2 py-1 rounded mt-2">
+            <div className="text-xs text-slate-500 font-mono bg-black/40 px-2 py-1.5 rounded break-all">
               {node.path}
             </div>
           </div>
@@ -144,36 +117,40 @@ const FolderOutline = ({ node, depth }: { node: TreemapNode; depth: number }) =>
   );
 };
 
-const TreemapRenderer = ({ 
-  node, 
-  depth = 0, 
+const CitySceneRenderer = ({ 
+  treemap, 
   maxSize,
   onHover
 }: { 
-  node: TreemapNode; 
-  depth?: number;
+  treemap: TreemapNode; 
   maxSize: number;
   onHover: (node: TreemapNode | null) => void;
 }) => {
+  const files: TreemapNode[] = [];
+  const folders: { node: TreemapNode, depth: number }[] = [];
+  
+  const traverse = (node: TreemapNode, depth: number) => {
+    if (node.type === "file") files.push(node);
+    else {
+      if (depth > 0) folders.push({ node, depth });
+      node.children.forEach(c => traverse(c, depth + 1));
+    }
+  };
+  traverse(treemap, 0);
+
   return (
     <group>
-      {node.type === "folder" && depth > 0 && (
-        <FolderOutline node={node} depth={depth} />
-      )}
-      
-      {node.children.map((child) => (
-        child.type === "file" ? (
-          <FileBlock key={child.path} node={child} maxSize={maxSize} onHover={onHover} />
-        ) : (
-          <TreemapRenderer 
-            key={child.path} 
-            node={child} 
-            depth={depth + 1} 
-            maxSize={maxSize}
-            onHover={onHover}
-          />
-        )
+      {folders.map(f => (
+        <FolderOutline key={f.node.path} node={f.node} depth={f.depth} />
       ))}
+      
+      <Instances limit={Math.max(files.length, 1)}>
+        <boxGeometry />
+        <meshStandardMaterial roughness={0.3} metalness={0.1} />
+        {files.map(f => (
+          <FileInstanceBlock key={f.path} node={f} maxSize={maxSize} onHover={onHover} />
+        ))}
+      </Instances>
     </group>
   );
 };
@@ -209,6 +186,9 @@ export const CityScene = ({ files }: { files: RepoFile[] }) => {
       <directionalLight position={[100, 100, 50]} intensity={0.8} />
       <directionalLight position={[-50, 50, -50]} intensity={0.3} />
 
+      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
+      <Sparkles count={200} scale={treemap.width * 2} size={2} speed={0.4} opacity={0.2} color="#4ade80" />
+
       <OrbitControls
         target={[center, 0, center]}
         makeDefault
@@ -231,9 +211,9 @@ export const CityScene = ({ files }: { files: RepoFile[] }) => {
         position={[center, 0, center]}
       />
 
-      <TreemapRenderer node={treemap} maxSize={maxSize} onHover={setHoveredNode} />
+      <CitySceneRenderer treemap={treemap} maxSize={maxSize} onHover={setHoveredNode} />
 
-      <fog attach="fog" args={['#0a0a12', 50, 300]} />
+      <fog attach="fog" args={['#0a0a12', 30, 250]} />
     </Canvas>
   );
 };

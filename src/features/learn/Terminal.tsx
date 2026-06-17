@@ -49,8 +49,17 @@ export const Terminal = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
-  
   const git = useGitStore();
+
+  // Sync input from store
+  useEffect(() => {
+    if (git.terminalInput) {
+      setInput(git.terminalInput);
+      inputRef.current?.focus();
+      // Optionally reset it so we can set the same command again if needed
+      git.setTerminalInput("");
+    }
+  }, [git.terminalInput, git]);
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -168,6 +177,15 @@ export const Terminal = () => {
           if (!git.isInitialized) {
             return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
           }
+          if (parts.includes("--amend")) {
+             const msgIndex = parts.indexOf("-m");
+             if (msgIndex !== -1 && parts[msgIndex + 1]) {
+                const message = parts.slice(msgIndex + 1).join(" ").replace(/"/g, "");
+                git.amend(message);
+                return [{ type: 'success', content: `✓ [${git.currentBranch}] ${message} (amended)` }];
+             }
+             return [{ type: 'error', content: "usage: git commit --amend -m 'message'" }];
+          }
           const msgIndex = parts.indexOf("-m");
           if (msgIndex !== -1 && parts[msgIndex + 1]) {
             if (git.staging.length === 0) {
@@ -226,7 +244,15 @@ export const Terminal = () => {
           if (!git.isInitialized) {
             return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
           }
+          if (args[0] === '--abort') {
+            if (!git.isMerging) return [{ type: 'error', content: "fatal: There is no merge to abort (MERGE_HEAD missing)." }];
+            git.abortMerge();
+            return [{ type: 'success', content: "✓ Merge aborted." }];
+          }
           if (args[0]) {
+            if (args[0] === 'conflict-branch' && !git.branches['conflict-branch']) {
+                git.triggerConflictScenario();
+            }
             if (!git.branches[args[0]]) {
               return [{ type: 'error', content: `merge: ${args[0]} - not something we can merge` }];
             }
@@ -234,6 +260,9 @@ export const Terminal = () => {
               return [{ type: 'error', content: `Already on '${args[0]}'` }];
             }
             git.merge(args[0]);
+            if (args[0] === 'conflict-branch') {
+                return [{ type: 'error', content: "Auto-merging conflicted.js\nCONFLICT (content): Merge conflict in conflicted.js\nAutomatic merge failed; fix conflicts and then commit the result." }];
+            }
             return [{ type: 'success', content: `✓ Merged '${args[0]}' into '${git.currentBranch}'` }];
           }
           return [{ type: 'error', content: "usage: git merge <branch>" }];
@@ -270,6 +299,123 @@ export const Terminal = () => {
             content: `* ${n.id} - ${n.message}` 
           })).reverse();
         
+        case "stash":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          if (args[0] === 'pop') {
+            if (git.stashes.length === 0) return [{ type: 'error', content: "No stash entries found." }];
+            git.stashPop();
+            return [{ type: 'success', content: "✓ Restored stash entry" }];
+          }
+          if (git.workingDirectory.length === 0 && git.staging.length === 0) {
+            return [{ type: 'output', content: "No local changes to save" }];
+          }
+          git.stash();
+          return [{ type: 'success', content: "✓ Saved working directory and index state WIP" }];
+
+        case "cherry-pick":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          if (!args[0]) return [{ type: 'error', content: "usage: git cherry-pick <commit>" }];
+          const cherryTarget = git.nodes.find(n => n.id === args[0] || n.id.startsWith(args[0]));
+          if (!cherryTarget) return [{ type: 'error', content: `fatal: bad revision '${args[0]}'` }];
+          git.cherryPick(args[0]);
+          return [{ type: 'success', content: `✓ Cherry-picked ${args[0]}` }];
+
+        case "reset":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          
+          if ((args[0] === '--hard' || args[0] === '--soft') && args[1]) {
+             let targetHash = args[1];
+             if (targetHash.startsWith('HEAD~')) {
+                const steps = parseInt(targetHash.split('~')[1]) || 1;
+                let curr = git.nodes.find(n => n.id === git.HEAD);
+                for(let i=0; i<steps; i++) {
+                   if (curr && curr.parentIds.length > 0) {
+                      curr = git.nodes.find(n => n.id === curr!.parentIds[0]);
+                   }
+                }
+                if (curr) targetHash = curr.id;
+             }
+             const resetTarget = git.nodes.find(n => n.id === targetHash || n.id.startsWith(targetHash));
+             if (!resetTarget) {
+               return [{ type: 'error', content: `fatal: ambiguous argument '${args[1]}': unknown revision` }];
+             }
+             
+             if (args[0] === '--hard') {
+                 git.resetHard(targetHash);
+             } else {
+                 git.resetSoft(targetHash);
+             }
+             
+             return [{ type: 'success', content: `✓ HEAD is now at ${targetHash.substring(0,7)}` }];
+          }
+          return [{ type: 'error', content: "Only 'git reset --hard/--soft <commit>' is supported in this sandbox" }];
+
+        case "revert":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          if (!args[0]) return [{ type: 'error', content: "usage: git revert <commit>" }];
+          git.revert(args[0]);
+          return [{ type: 'success', content: `✓ Reverted ${args[0]}` }];
+
+        case "rebase":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          if (!args[0]) return [{ type: 'error', content: "usage: git rebase <branch>" }];
+          if (!git.branches[args[0]]) return [{ type: 'error', content: `fatal: invalid upstream '${args[0]}'` }];
+          git.rebase(args[0]);
+          return [{ type: 'success', content: `✓ Successfully rebased and updated ${git.currentBranch}.` }];
+
+        case "tag":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          if (!args[0]) return [{ type: 'error', content: "usage: git tag <name>" }];
+          git.tag(args[0]);
+          return [{ type: 'success', content: `✓ Created tag '${args[0]}'` }];
+
+        case "restore":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository." }];
+          if (args[0] === '--staged' && args[1]) {
+             if (!git.staging.includes(args[1])) {
+                 return [{ type: 'error', content: `error: pathspec '${args[1]}' did not match any file(s) known to git` }];
+             }
+             git.restore(args[1]);
+             return [{ type: 'success', content: `✓ Unstaged '${args[1]}'` }];
+          }
+          return [{ type: 'error', content: "usage: git restore --staged <file>" }];
+
+        case "reflog":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository." }];
+          if (git.reflogHistory.length === 0) return [{ type: 'output', content: "" }];
+          return git.reflogHistory.map((entry, i) => {
+             const hash = entry.split(' ')[0].substring(0, 7);
+             const rest = entry.split(' ').slice(1).join(' ').replace('HEAD@{0}', `HEAD@{${i}}`);
+             return { type: 'output' as const, content: `${hash} ${rest}` };
+          });
+
+        case "fetch":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          git.fetch();
+          return [{ type: 'success', content: "✓ Fetched updates from remote." }];
+
+        case "push":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          if (!git.branches['main']) return [{ type: 'error', content: "fatal: current branch has no upstream branch." }];
+          git.push();
+          return [{ type: 'success', content: "✓ Pushed to origin/main" }];
+
+        case "squash":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository." }];
+          const count = parseInt(args[0]);
+          const mIndex = parts.indexOf("-m");
+          if (isNaN(count) || mIndex === -1 || !parts[mIndex + 1]) {
+             return [{ type: 'error', content: "usage: git squash <number_of_commits> -m 'message'" }];
+          }
+          const squashMessage = parts.slice(mIndex + 1).join(" ").replace(/"/g, "");
+          git.squash(count, squashMessage);
+          return [{ type: 'success', content: `✓ Squashed last ${count} commits into one.` }];
+
+        case "pull":
+          if (!git.isInitialized) return [{ type: 'error', content: "fatal: not a git repository. Run 'git init' first." }];
+          git.pull();
+          return [{ type: 'success', content: "✓ Pulled updates from origin/main and merged." }];
+          
         default:
           return [{ type: 'error', content: `git: '${subCommand}' is not a git command. See 'help' for available commands.` }];
       }
@@ -295,6 +441,23 @@ export const Terminal = () => {
     setHistory(prev => [...prev, commandEntry, ...results]);
     setInput("");
   };
+
+  // Scenario Validation Hook
+  useEffect(() => {
+    if (git.currentScenarioId) {
+      import('./GitEngine').then(({ SCENARIOS }) => {
+        const activeScenario = SCENARIOS.find(s => s.id === git.currentScenarioId);
+        if (activeScenario && activeScenario.goal(git) && !git.completedScenarios.includes(git.currentScenarioId!)) {
+          git.completeScenario(git.currentScenarioId!);
+          setHistory(prev => [
+             ...prev, 
+             { type: 'success', content: `🎉 Scenario Completed: ${activeScenario.title}` },
+             { type: 'output', content: `Great job! You can pick the next scenario from the sidebar.` }
+          ]);
+        }
+      });
+    }
+  }, [git]);
 
   // Handle arrow keys for command history
   const handleKeyDown = (e: React.KeyboardEvent) => {

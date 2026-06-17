@@ -13,15 +13,17 @@ A visual developer tool that transforms GitHub repositories into interactive 2.5
 ## What This Does
 
 ### 🗺️ Repository Visualization
-Paste any public GitHub URL and watch it transform into a treemap where:
+Paste any GitHub URL and watch it transform into a treemap where:
 - **Block height** = file size
 - **Block color** = file type (TypeScript is blue, CSS is purple, etc.)
 - **Nested rectangles** = folder hierarchy
 
+*🚀 New:* **Private Repository Support!** You can now securely provide a GitHub Personal Access Token (PAT) locally to bypass API rate limits and visualize private repositories.
+
 Hover over any block to see file details. Drag to orbit. Scroll to zoom.
 
 ### 🎓 Interactive Git Learning
-A built-in terminal simulator where you can practice Git commands and see the commit graph update in real-time. No risk of breaking anything—it's all simulated.
+A built-in terminal simulator where you can practice Git commands and see the commit graph update in real-time. Features a fully custom Git engine supporting **18 interactive scenarios** (including rebase, merge conflicts, detached HEAD, and reflog tracking). No risk of breaking anything—it's all simulated.
 
 ---
 
@@ -84,19 +86,17 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 Things this project intentionally does not do:
 
-- **No authentication** — We use GitHub's public API only
-- **No private repos** — By design, to keep it simple
 - **No backend** — Everything runs client-side
-- **No analytics/tracking** — Your data stays in your browser
+- **No analytics/tracking** — Your data stays securely in your browser
 - **No historical analysis** — We show current state, not trends
 
 ---
 
 ## Known Limitations
 
-- **Rate limiting**: GitHub's unauthenticated API allows ~60 requests/hour. Large repos may hit this.
-- **Large repos**: Repositories with 10,000+ files may be slow to render.
-- **Mobile**: The 3D view isn't optimized for touch devices yet.
+- **Rate limiting**: GitHub's unauthenticated API allows ~60 requests/hour. We highly recommend using the optional local PAT input to increase this to 5,000/hour.
+- **Large repos**: Repositories with 10,000+ files may take a few seconds to render, though they are highly optimized using Three.js `InstancedMesh`.
+- **Mobile**: The 3D view is not optimized for touch devices yet.
 
 ---
 
@@ -109,14 +109,11 @@ Things this project intentionally does not do:
 - [x] Commit graph visualization
 
 ### Next
-- [ ] GitHub OAuth for higher rate limits
-- [ ] Search/filter files in visualization
 - [ ] Export visualization as image
 - [ ] Keyboard navigation
 
 ### Later
 - [ ] Compare two branches visually
-- [ ] Private repository support
 - [ ] VS Code extension
 
 ---

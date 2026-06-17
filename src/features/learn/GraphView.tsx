@@ -157,10 +157,12 @@ export const GraphView = () => {
                 {/* Branch Label */}
                 {branchLabel && (
                   <motion.div
+                    layoutId={`branch-${branchLabel}`}
                     initial={{ y: 5, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className={clsx(
-                      "absolute -top-9 text-white text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium",
+                      "absolute -top-9 text-white text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30",
                       branchLabel === "main" ? "bg-blue-600" : "bg-purple-600"
                     )}
                   >
@@ -171,9 +173,12 @@ export const GraphView = () => {
 
                 {/* HEAD-only Label (no branch) */}
                 {isHead && !branchLabel && (
-                  <div className="absolute -top-9 bg-green-600 text-white text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium">
+                  <motion.div 
+                    layoutId="head-pointer"
+                    className="absolute -top-9 bg-green-600 text-white text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30"
+                  >
                     HEAD
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Hover Tooltip */}
