@@ -33,7 +33,7 @@ export default function PrivacyPolicy() {
         <div className="space-y-8 text-slate-300 font-sans leading-relaxed">
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">1. Introduction</h2>
-            <p>At CodeCity, we believe in complete transparency and respect for your privacy. This policy outlines how we handle your data when you use our application. The short version is: <strong>we collect absolutely nothing.</strong></p>
+            <p>At CodeCity, we believe in transparency and respect for your privacy. This policy outlines how we handle your data when you use our application. We strictly limit data collection to essential analytics designed to improve your experience.</p>
           </section>
 
           <section>
@@ -43,12 +43,12 @@ export default function PrivacyPolicy() {
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">3. Local Storage & Cookies</h2>
-            <p>We do not use tracking cookies or third-party analytics. We only use your browser's local storage to save your settings (such as hiding the consent banner or remembering your UI preferences) so you don't have to configure them every time you visit.</p>
+            <p>We use your browser's local storage to save your settings (such as hiding the consent banner or remembering your UI preferences) so you don't have to configure them every time you visit. If you opt-in, we also use cookies via Microsoft Clarity for analytics.</p>
           </section>
 
           <section>
             <h2 className="text-2xl font-bold text-white mb-3">4. Analytics and Tracking</h2>
-            <p>We do not track your usage, clicks, or the repositories you visualize. What you build and explore in CodeCity stays securely on your device.</p>
+            <p>We use Microsoft Clarity to understand how you use our application and improve your experience. This includes session recordings, heatmaps, and general usage analytics. <strong>We do not sell your data</strong>, and this tracking is strictly opt-in via our cookie consent banner. The content of your private repositories is never sent to our analytics providers.</p>
           </section>
 
           <section>
