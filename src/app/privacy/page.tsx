@@ -1,22 +1,34 @@
+"use client";
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTheme } from '@/components/ThemeProvider';
+import ThemeToggle from '@/components/ThemeToggle';
 
 export default function PrivacyPolicy() {
+  const { theme } = useTheme();
   return (
-    <div className="min-h-screen bg-[#101622] text-white font-display py-12 px-6">
+    <div className={`min-h-screen font-display py-12 px-6 ${theme === 'terminal' ? 'bg-black text-white' : 'bg-[#101622] text-white'}`}>
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center justify-between mb-12 border-b border-white/10 pb-6">
           <Link href="/" className="flex items-center gap-3 w-fit group">
             <Image src="/logo.png" alt="GitHub Visualizer" width={40} height={40} className="rounded-xl group-hover:ring-2 ring-primary/50 transition-all" unoptimized />
             <h2 className="text-white text-2xl font-bold leading-tight tracking-tight">CodeCity</h2>
           </Link>
-          <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 text-sm font-medium">
-            <span className="material-symbols-outlined text-sm">arrow_back</span>
-            <span>Back to Home</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
+            <Link href="/" className={`flex items-center gap-2 rounded-full h-10 px-4 py-2 text-sm font-medium transition-all ${
+              theme === 'terminal' 
+                ? 'bg-black text-white border border-white hover:bg-white hover:text-black' 
+                : 'bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/5'
+            }`}>
+              <span className="material-symbols-outlined text-sm">arrow_back</span>
+              <span>Back to Home</span>
+            </Link>
+          </div>
         </div>
 
-        <h1 className="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Privacy Policy</h1>
+        <h1 className={`text-4xl font-bold mb-8 ${theme === 'terminal' ? 'text-white' : 'text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500'}`}>Privacy Policy</h1>
         
         <div className="space-y-8 text-slate-300 font-sans leading-relaxed">
           <section>

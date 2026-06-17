@@ -6,6 +6,7 @@
   --primary: #256af4;
   --secondary: #282e39;
   --panel: #161b22;
+  --primary-foreground: #ffffff;
 }
 
 @theme inline {
@@ -14,6 +15,7 @@
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
   --color-panel: var(--panel);
+  --color-primary-foreground: var(--primary-foreground);
   --font-display: var(--font-space);
   --font-sans: var(--font-inter);
   
@@ -93,4 +95,33 @@ body {
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+}
+
+/* Minimal Space Theme Overrides */
+.theme-terminal {
+  --background: #000000;
+  --foreground: #ffffff;
+  --primary: #ffffff;
+  --primary-foreground: #000000;
+  --secondary: #111111;
+  --panel: #050505;
+
+  /* Override specific utility colors to grayscale for a harsh B&W look */
+  --color-blue-400: #f5f5f5;
+  --color-blue-500: #cccccc;
+  --color-blue-600: #a3a3a3;
+  --color-purple-400: #ffffff;
+  --color-purple-500: #cccccc;
+  --color-purple-600: #a3a3a3;
+  --color-cyan-400: #ffffff;
+  --color-primary: #ffffff;
+}
+
+.theme-terminal .glassmorphism-card,
+.theme-terminal .glassmorphism {
+  background: #000000 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
 }

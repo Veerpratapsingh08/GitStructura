@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { useGitStore, SCENARIOS } from "./GitEngine";
+import { useTheme } from "@/components/ThemeProvider";
 
 type Command = {
   command: string;
@@ -198,20 +199,23 @@ export const TutorialSidebar = () => {
   const [openTopic, setOpenTopic] = useState<string | null>("Git Introduction");
   
   const git = useGitStore();
+  const { theme } = useTheme();
 
   const handleCommandClick = (cmd: string) => {
     git.setTerminalInput(cmd);
   };
 
   return (
-    <aside className="w-80 flex flex-col border-r border-[#30363d] bg-[#0d1117] shrink-0 h-full overflow-hidden">
+    <aside className={`w-80 flex flex-col border-r shrink-0 h-full overflow-hidden ${theme === 'terminal' ? 'bg-black border-white/20' : 'bg-[#0d1117] border-[#30363d]'}`}>
       {/* Header Tabs */}
-      <div className="flex border-b border-[#30363d]">
+      <div className={`flex border-b ${theme === 'terminal' ? 'border-white/20' : 'border-[#30363d]'}`}>
         <button 
           onClick={() => setActiveTab('scenarios')}
           className={clsx(
             "flex-1 py-3 text-sm font-bold border-b-2 transition-colors",
-            activeTab === 'scenarios' ? "border-[#256af4] text-[#256af4]" : "border-transparent text-gray-500 hover:text-gray-300"
+            activeTab === 'scenarios' 
+              ? (theme === 'terminal' ? "border-white text-white" : "border-[#256af4] text-[#256af4]") 
+              : "border-transparent text-gray-500 hover:text-gray-300"
           )}
         >
           Scenarios
@@ -220,7 +224,9 @@ export const TutorialSidebar = () => {
           onClick={() => setActiveTab('reference')}
           className={clsx(
             "flex-1 py-3 text-sm font-bold border-b-2 transition-colors",
-            activeTab === 'reference' ? "border-[#256af4] text-[#256af4]" : "border-transparent text-gray-500 hover:text-gray-300"
+            activeTab === 'reference' 
+              ? (theme === 'terminal' ? "border-white text-white" : "border-[#256af4] text-[#256af4]") 
+              : "border-transparent text-gray-500 hover:text-gray-300"
           )}
         >
           Reference
@@ -239,7 +245,9 @@ export const TutorialSidebar = () => {
                   key={scenario.id} 
                   className={clsx(
                     "border rounded-xl p-4 transition-all",
-                    isActive ? "border-[#256af4] bg-[#256af4]/5 shadow-[0_0_15px_rgba(37,106,244,0.15)]" : "border-[#30363d] bg-[#161b22]",
+                    isActive 
+                      ? (theme === 'terminal' ? "border-white bg-white/10 shadow-none" : "border-[#256af4] bg-[#256af4]/5 shadow-[0_0_15px_rgba(37,106,244,0.15)]") 
+                      : (theme === 'terminal' ? "border-white/20 bg-black" : "border-[#30363d] bg-[#161b22]"),
                     isCompleted && !isActive && "opacity-70"
                   )}
                 >
@@ -252,12 +260,12 @@ export const TutorialSidebar = () => {
                   <p className="text-xs text-gray-400 mb-4">{scenario.description}</p>
                   
                   {isActive ? (
-                    <div className="bg-[#0d1117] rounded-lg p-3 border border-[#30363d]/50">
+                    <div className={`rounded-lg p-3 border ${theme === 'terminal' ? 'bg-black border-white/20' : 'bg-[#0d1117] border-[#30363d]/50'}`}>
                       <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Suggested Commands</p>
                       <div className="space-y-2">
                         {scenario.hints.map((hint, i) => (
                           <div key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                            <span className="text-[#256af4] mt-0.5">•</span>
+                            <span className={`mt-0.5 ${theme === 'terminal' ? 'text-white' : 'text-[#256af4]'}`}>•</span>
                             <span>{hint}</span>
                           </div>
                         ))}
@@ -266,7 +274,7 @@ export const TutorialSidebar = () => {
                   ) : (
                     <button 
                       onClick={() => git.setScenario(scenario.id)}
-                      className="text-xs text-[#256af4] hover:text-blue-400 font-medium"
+                      className={`text-xs font-medium ${theme === 'terminal' ? 'text-white hover:text-gray-300' : 'text-[#256af4] hover:text-blue-400'}`}
                     >
                       {isCompleted ? "Replay Scenario" : "Start Scenario"}
                     </button>
@@ -279,25 +287,26 @@ export const TutorialSidebar = () => {
           <div>
             {/* Existing Reference List */}
             {gitCourse.map((module, moduleIdx) => (
-              <div key={module.name} className="border-b border-[#30363d]/50">
+              <div key={module.name} className={`border-b ${theme === 'terminal' ? 'border-white/20' : 'border-[#30363d]/50'}`}>
                 <button
                   onClick={() => setOpenModule(openModule === moduleIdx ? -1 : moduleIdx)}
                   className={clsx(
-                    "w-full flex items-center justify-between px-4 py-3 hover:bg-[#161b22] transition-colors",
-                    openModule === moduleIdx && "bg-[#161b22]"
+                    "w-full flex items-center justify-between px-4 py-3 transition-colors",
+                    theme === 'terminal' ? "hover:bg-white/10" : "hover:bg-[#161b22]",
+                    openModule === moduleIdx && (theme === 'terminal' ? "bg-white/10" : "bg-[#161b22]")
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <span className={clsx(
                       "material-symbols-outlined text-lg",
-                      openModule === moduleIdx ? "text-[#256af4]" : "text-gray-500"
+                      openModule === moduleIdx ? (theme === 'terminal' ? "text-white" : "text-[#256af4]") : "text-gray-500"
                     )}>{module.icon}</span>
                     <span className={clsx(
                       "font-medium text-sm",
                       openModule === moduleIdx ? "text-white" : "text-gray-300"
                     )}>{module.name}</span>
                   </div>
-                  <ChevronDown size={16} className={clsx("text-gray-500 transition-transform", openModule === moduleIdx && "rotate-180 text-[#256af4]")} />
+                  <ChevronDown size={16} className={clsx("text-gray-500 transition-transform", openModule === moduleIdx && (theme === 'terminal' ? "rotate-180 text-white" : "rotate-180 text-[#256af4]"))} />
                 </button>
                 {openModule === moduleIdx && (
                   <div className="bg-[#0d1117] pb-2">

@@ -4,6 +4,8 @@ import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { CityScene } from "@/features/visualizer/CityScene";
 import { RepoFile, fetchRepoTree, parseRepoUrl } from "@/features/visualizer/Fetcher";
 import { Loader2 } from "lucide-react";
+import ThemeToggle from '@/components/ThemeToggle';
+import { useTheme } from '@/components/ThemeProvider';
 import Link from "next/link";
 import Image from "next/image";
 
@@ -13,6 +15,7 @@ export default function VisualizePage() {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<RepoFile[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const { theme } = useTheme();
   
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showExploreHint, setShowExploreHint] = useState(true);
@@ -138,7 +141,11 @@ export default function VisualizePage() {
 
   const renderSearchInputs = () => (
     <div className="flex gap-3 min-w-40 h-10 w-full max-w-[800px] justify-center flex-1 z-50">
-      <div className="flex w-full max-w-[500px] items-stretch rounded-lg h-full group bg-[#1b1f27] focus-within:ring-2 focus-within:ring-primary/50 transition-all shadow-xl">
+      <div className={`flex w-full max-w-[500px] items-stretch rounded-lg h-full group transition-all shadow-xl ${
+        theme === 'terminal' 
+          ? 'bg-black border border-white focus-within:ring-0' 
+          : 'bg-[#1b1f27] focus-within:ring-2 focus-within:ring-primary/50'
+      }`}>
         <div className="text-slate-400 flex border-none items-center justify-center pl-3">
           <span className="material-symbols-outlined">search</span>
         </div>
@@ -156,7 +163,11 @@ export default function VisualizePage() {
         )}
       </div>
 
-      <div className="relative group/tooltip flex w-48 shrink-0 items-stretch rounded-lg h-full bg-[#1b1f27] focus-within:ring-2 focus-within:ring-primary/50 transition-all shadow-xl">
+      <div className={`relative group/tooltip flex w-48 shrink-0 items-stretch rounded-lg h-full transition-all shadow-xl ${
+        theme === 'terminal' 
+          ? 'bg-black border border-white focus-within:ring-0' 
+          : 'bg-[#1b1f27] focus-within:ring-2 focus-within:ring-primary/50'
+      }`}>
         <div className="text-slate-400 flex border-none items-center justify-center pl-3">
           <span className="material-symbols-outlined text-sm">key</span>
         </div>
@@ -179,8 +190,10 @@ export default function VisualizePage() {
   );
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#101622] text-white font-display">
-      <header className="flex items-center justify-between border-b border-solid border-white/5 bg-[#111318]/90 backdrop-blur-md px-6 py-3 z-50 shrink-0">
+    <div className={`flex flex-col h-screen overflow-hidden text-white font-display ${theme === 'terminal' ? 'bg-[#000000]' : 'bg-[#101622]'}`}>
+      <header className={`flex items-center justify-between border-b px-6 py-3 z-50 shrink-0 ${
+        theme === 'terminal' ? 'bg-[#000000] border-white/20' : 'border-white/5 bg-[#111318]/90 backdrop-blur-md'
+      }`}>
         <div className="flex-1">
           <Link href="/" className="flex items-center gap-3 w-fit">
             <Image src="/logo.png" alt="GitHub Visualizer" width={32} height={32} className="rounded-lg" unoptimized />
@@ -190,25 +203,30 @@ export default function VisualizePage() {
         
         {data ? renderSearchInputs() : <div className="flex-1"></div>}
 
-        <div className="flex-1 flex justify-end">
-            <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 text-sm font-medium">
+        <div className="flex-1 flex justify-end items-center gap-4">
+            <ThemeToggle />
+            <Link href="/" className={`flex items-center gap-2 rounded-full h-10 px-4 py-2 text-sm font-medium transition-all ${
+              theme === 'terminal' 
+                ? 'bg-black text-white border border-white hover:bg-white hover:text-black' 
+                : 'bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white border border-white/5'
+            }`}>
               <span className="material-symbols-outlined text-sm">arrow_back</span>
               <span className="hidden sm:inline">Back to Home</span>
             </Link>
         </div>
       </header>
       
-      <div className="flex flex-1 relative overflow-hidden bg-slate-900">
+      <div className={`flex flex-1 relative overflow-hidden ${theme === 'terminal' ? 'bg-black' : 'bg-slate-900'}`}>
             <div className="absolute inset-0 z-0">
                  {data ? (
                      <CityScene files={data} />
                  ) : (
                      <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800">
-                              <div className="absolute inset-0 opacity-20">
+                          <div className={`absolute inset-0 ${theme === 'terminal' ? 'bg-black' : 'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800'}`}>
+                              <div className={`absolute inset-0 opacity-20 ${theme === 'terminal' ? 'hidden' : ''}`}>
                                   <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-[linear-gradient(rgba(37,106,244,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(37,106,244,0.1)_1px,transparent_1px)] bg-[size:40px_40px] [transform:perspective(500px)_rotateX(60deg)] origin-bottom"></div>
                               </div>
-                              <div className="absolute bottom-[20%] left-1/2 -translate-x-1/2 flex gap-4 opacity-30">
+                              <div className={`absolute bottom-[20%] left-1/2 -translate-x-1/2 flex gap-4 opacity-30 ${theme === 'terminal' ? 'hidden' : ''}`}>
                                   <div className="w-8 h-20 bg-gradient-to-t from-blue-500/40 to-transparent rounded-t animate-pulse"></div>
                                   <div className="w-12 h-32 bg-gradient-to-t from-purple-500/40 to-transparent rounded-t animate-pulse delay-100"></div>
                                   <div className="w-6 h-16 bg-gradient-to-t from-yellow-500/40 to-transparent rounded-t animate-pulse delay-200"></div>
@@ -220,16 +238,16 @@ export default function VisualizePage() {
                           </div>
                           
                           <div className="relative z-10 flex flex-col items-center">
-                              <div className="bg-primary/10 p-4 rounded-full mb-6 ring-1 ring-primary/20 w-fit">
+                              <div className={`p-4 rounded-full mb-6 w-fit ${theme === 'terminal' ? 'bg-black border border-white' : 'bg-primary/10 ring-1 ring-primary/20'}`}>
                                    <Image src="/logo.png" alt="GitHub Visualizer" width={64} height={64} className="animate-[float_4s_ease-in-out_infinite]" />
                               </div>
-                              <h1 className="text-4xl font-bold mb-3 bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent">Build Your Code City</h1>
-                              <p className="text-slate-400 max-w-md text-lg mb-8">Paste a GitHub URL to transform any repository into an immersive 3D metropolis.</p>
+                              <h1 className={`text-4xl font-bold mb-3 ${theme === 'terminal' ? 'text-white' : 'bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent'}`}>Build Your Code City</h1>
+                              <p className={`max-w-md text-lg mb-8 ${theme === 'terminal' ? 'text-white' : 'text-slate-400'}`}>Paste a GitHub URL to transform any repository into an immersive 3D metropolis.</p>
                               
                               <div className="w-full max-w-[800px] mb-8">
                                   {renderSearchInputs()}
                                   <p className="text-sm text-slate-400 mt-6 max-w-lg mx-auto leading-relaxed">
-                                      * A GitHub Personal Access Token (PAT) is optional for public repos, but <span className="inline-block px-2 py-0.5 mx-1 rounded bg-blue-500/20 text-blue-300 font-medium border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.3)] animate-[pulse_2s_ease-in-out_infinite]">Required for Private Repositories</span>. It is only used locally in your browser to bypass API limits.
+                                      * A GitHub Personal Access Token (PAT) is optional for public repos, but <span className={`inline-block px-2 py-0.5 mx-1 rounded font-medium ${theme === 'terminal' ? 'bg-white text-black' : 'bg-blue-500/20 text-blue-300 border border-blue-500/30 shadow-[0_0_10px_rgba(59,130,246,0.3)] animate-[pulse_2s_ease-in-out_infinite]'}`}>Required for Private Repositories</span>. It is only used locally in your browser to bypass API limits.
                                   </p>
                               </div>
 
@@ -244,7 +262,11 @@ export default function VisualizePage() {
                                           <button 
                                               key={repo}
                                               onClick={() => { setUrl(repo); }}
-                                              className="px-4 py-2 bg-white/5 hover:bg-primary/20 border border-white/10 hover:border-primary/50 rounded-full text-sm text-slate-300 hover:text-white transition-all group"
+                                              className={`px-4 py-2 rounded-full text-sm transition-all group ${
+                                                theme === 'terminal' 
+                                                  ? 'bg-black border border-white text-white hover:bg-white hover:text-black' 
+                                                  : 'bg-white/5 hover:bg-primary/20 border border-white/10 hover:border-primary/50 text-slate-300 hover:text-white'
+                                              }`}
                                           >
                                               <span className="group-hover:text-primary transition-colors">{name}</span>
                                               <span className="text-slate-500 ml-2 text-xs font-mono">{repo}</span>

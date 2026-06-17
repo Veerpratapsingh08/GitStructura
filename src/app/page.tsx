@@ -5,14 +5,23 @@ import Image from "next/image";
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "@/components/ThemeProvider";
+import ParticleBackground from "@/components/ParticleBackground";
 
 export default function Home() {
   const router = useRouter();
+  const { theme } = useTheme();
 
   return (
     <div className="flex flex-col min-h-screen font-display bg-[#0a0f1a] overflow-hidden relative">
-      {/* Dynamic Background Orbs */}
+      {/* Dynamic Backgrounds based on Theme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+        {theme === 'terminal' ? (
+          <ParticleBackground />
+        ) : (
+          <>
+            {/* Dynamic Background Orbs */}
         <motion.div 
           animate={{ 
             x: ["0%", "20%", "-10%", "0%"],
@@ -50,6 +59,7 @@ export default function Home() {
           transition={{ duration: 4, repeat: Infinity, repeatDelay: 1, ease: "linear" }}
           className="absolute top-[10%] left-[10%] w-64 h-px bg-gradient-to-r from-transparent via-blue-300 to-transparent rotate-45 drop-shadow-[0_0_10px_rgba(147,197,253,0.8)]"
         />
+        <div className="absolute top-1/2 right-[-20%] w-[1px] h-[30%] bg-gradient-to-b from-transparent via-blue-400 to-transparent rotate-45" />
         <motion.div
           animate={{
             x: ["-10vw", "110vw"],
@@ -59,6 +69,8 @@ export default function Home() {
           transition={{ duration: 6, repeat: Infinity, repeatDelay: 3, ease: "linear" }}
           className="absolute top-[-20%] left-[40%] w-96 h-[2px] bg-gradient-to-r from-transparent via-purple-300 to-transparent rotate-45 blur-[1px] drop-shadow-[0_0_15px_rgba(216,180,254,0.8)]"
         />
+        </>
+        )}
       </div>
       {/* Animated cosmic stardust */}
       <motion.div 
@@ -78,9 +90,14 @@ export default function Home() {
           <h2 className="text-white text-xl font-bold leading-tight">CodeCity</h2>
         </div>
         <div className="flex flex-1 justify-end gap-4 items-center">
+          <ThemeToggle />
           <Link 
             href="/learn" 
-            className="flex cursor-pointer items-center justify-center rounded-full h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white gap-2 text-sm font-bold px-5 transition-all shadow-[0_0_15px_rgba(37,106,244,0.5)] mr-2 hover:scale-105 animate-pulse hover:animate-none"
+            className={`flex cursor-pointer items-center justify-center rounded-full h-10 gap-2 text-sm font-bold px-5 transition-all mr-2 ${
+              theme === 'terminal' 
+                ? 'bg-black text-white border border-white hover:bg-white hover:text-black hover:scale-105' 
+                : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-[0_0_15px_rgba(37,106,244,0.5)] hover:scale-105 animate-pulse hover:animate-none'
+            }`}
           >
             <span className="material-symbols-outlined text-[18px]">school</span>
             Learn Git
@@ -89,7 +106,11 @@ export default function Home() {
             href="https://github.com/Veerpratapsingh08/Github-Visualizer" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="flex cursor-pointer items-center justify-center rounded-full h-10 bg-white/5 hover:bg-white/10 text-white gap-2 text-sm font-bold px-5 transition-all border border-white/10 hover:border-white/20 shadow-lg backdrop-blur-md"
+            className={`hidden md:flex cursor-pointer items-center justify-center rounded-full h-10 gap-2 text-sm font-bold px-5 transition-all ${
+              theme === 'terminal' 
+                ? 'bg-black text-white border border-white hover:bg-white hover:text-black' 
+                : 'bg-white/5 hover:bg-white/10 text-white border border-white/10 hover:border-white/20 shadow-lg backdrop-blur-md'
+            }`}
           >
             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
             <span className="hidden sm:inline">Star on GitHub</span>
@@ -117,12 +138,16 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row gap-4 mb-12 z-10 w-full max-w-xl justify-center items-center">
                 <div className="relative group">
-                    <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-md opacity-40 group-hover:opacity-70 transition duration-500"></div>
+                    <div className={`absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur-md transition duration-500 ${theme === 'terminal' ? 'hidden' : 'opacity-40 group-hover:opacity-70'}`}></div>
                     <Link 
                         href="/visualize" 
-                        className="relative flex cursor-pointer items-center justify-center rounded-full h-14 bg-[#111318] hover:bg-transparent text-white gap-3 text-lg font-bold px-10 transition-all border border-white/10 group-hover:border-transparent"
+                        className={`relative flex cursor-pointer items-center justify-center rounded-full h-14 gap-3 text-lg font-bold px-10 transition-all ${
+                          theme === 'terminal' 
+                            ? 'bg-black text-white border border-white hover:bg-white hover:text-black' 
+                            : 'bg-[#111318] hover:bg-transparent text-white border border-white/10 group-hover:border-transparent'
+                        }`}
                     >
-                        Launch Visualizer <span className="material-symbols-outlined text-[20px] text-primary group-hover:text-white transition-colors">rocket_launch</span>
+                        Launch Visualizer <span className="material-symbols-outlined text-[20px] transition-colors">rocket_launch</span>
                     </Link>
                 </div>
             </div>
@@ -131,7 +156,11 @@ export default function Home() {
                 <p className="text-slate-300 mb-4 text-center font-medium">Want to learn Git commands interactively?</p>
                 <Link 
                     href="/learn" 
-                    className="flex cursor-pointer items-center justify-center rounded-full h-14 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white gap-3 text-lg font-bold px-8 w-full sm:w-auto transition-all shadow-[0_0_20px_rgba(37,106,244,0.6)] hover:scale-105"
+                    className={`flex cursor-pointer items-center justify-center rounded-full h-14 gap-3 text-lg font-bold px-8 w-full sm:w-auto transition-all ${
+                      theme === 'terminal' 
+                        ? 'bg-black text-white border border-white hover:bg-white hover:text-black hover:scale-105' 
+                        : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-[0_0_20px_rgba(37,106,244,0.6)] hover:scale-105'
+                    }`}
                 >
                     <span className="material-symbols-outlined text-[24px]">school</span>
                     Enter the Git Sandbox

@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useGitStore } from "./GitEngine";
 import clsx from "clsx";
+import { useTheme } from "@/components/ThemeProvider";
 
 // Smart suggestions for common mistakes
 const SUGGESTIONS: Record<string, string> = {
@@ -49,6 +50,7 @@ export const Terminal = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const { theme } = useTheme();
   const git = useGitStore();
 
   // Sync input from store
@@ -482,9 +484,9 @@ export const Terminal = () => {
   };
 
   return (
-    <div className="flex-1 flex flex-col min-w-0 bg-[#0d1117] relative">
+    <div className={`flex-1 flex flex-col min-w-0 relative ${theme === 'terminal' ? 'bg-black' : 'bg-[#0d1117]'}`}>
       {/* Terminal Header */}
-      <div className="h-10 bg-[#161b22] border-b border-[#30363d] flex items-center px-4 justify-between shrink-0">
+      <div className={`h-10 border-b flex items-center px-4 justify-between shrink-0 ${theme === 'terminal' ? 'bg-black border-white/20' : 'bg-[#161b22] border-[#30363d]'}`}>
         <div className="flex items-center gap-2">
           <span className="flex gap-1.5">
             <span className="size-3 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer transition-colors"></span>

@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useMemo, useState, useEffect, useRef } from "react";
 import { GitNode, useGitStore } from "./GitEngine";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
+import { useTheme } from "@/components/ThemeProvider";
 
 export const GraphView = () => {
   const { nodes, HEAD, branches, isInitialized } = useGitStore();
   const [newNodeId, setNewNodeId] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<GitNode | null>(null);
+  const { theme } = useTheme();
 
   // Track new commits for pulse animation
   useEffect(() => {
@@ -134,7 +136,10 @@ export const GraphView = () => {
                 {/* Pulse ring for new commits */}
                 {isNew && (
                   <motion.div
-                    className="absolute w-10 h-10 rounded-full border-2 border-primary"
+                    className={clsx(
+                      "absolute w-10 h-10 rounded-full border-2",
+                      theme === 'terminal' ? "border-white" : "border-primary"
+                    )}
                     initial={{ scale: 1, opacity: 1 }}
                     animate={{ scale: 2, opacity: 0 }}
                     transition={{ duration: 1, ease: "easeOut" }}
@@ -144,11 +149,18 @@ export const GraphView = () => {
                 {/* Node Circle */}
                 <div
                   className={clsx(
-                    "w-8 h-8 rounded-full border-2 flex items-center justify-center z-10 transition-all duration-200",
-                    isHead && "border-green-400 bg-green-900 text-green-100 shadow-[0_0_12px_rgba(74,222,128,0.5)]",
-                    !isHead && isMerge && "border-purple-400 bg-purple-900 text-purple-100",
-                    !isHead && !isMerge && "border-slate-500 bg-slate-800 text-slate-400",
-                    "hover:scale-110 hover:border-white"
+                    "w-8 h-8 rounded-full border-2 flex items-center justify-center z-10 transition-all duration-200 hover:scale-110",
+                    theme === 'terminal' ? [
+                      isHead && "border-white bg-white text-black shadow-none",
+                      !isHead && isMerge && "border-white bg-black text-white",
+                      !isHead && !isMerge && "border-slate-500 bg-black text-slate-300",
+                      "hover:border-white hover:bg-white/20"
+                    ] : [
+                      isHead && "border-green-400 bg-green-900 text-green-100 shadow-[0_0_12px_rgba(74,222,128,0.5)]",
+                      !isHead && isMerge && "border-purple-400 bg-purple-900 text-purple-100",
+                      !isHead && !isMerge && "border-slate-500 bg-slate-800 text-slate-400",
+                      "hover:border-white"
+                    ]
                   )}
                 >
                   <span className="text-[9px] font-mono font-bold">{node.id.substring(0, 4)}</span>
@@ -162,8 +174,10 @@ export const GraphView = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className={clsx(
-                      "absolute -top-9 text-white text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30",
-                      branchLabel === "main" ? "bg-blue-600" : "bg-purple-600"
+                      "absolute -top-9 text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30",
+                      theme === 'terminal' 
+                        ? "bg-white text-black border border-white" 
+                        : branchLabel === "main" ? "bg-blue-600 text-white" : "bg-purple-600 text-white"
                     )}
                   >
                     {branchLabel}
@@ -175,11 +189,22 @@ export const GraphView = () => {
                 {isHead && !branchLabel && (
                   <motion.div 
                     layoutId="head-pointer"
-                    className="absolute -top-9 bg-green-600 text-white text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30"
+                    className={clsx(
+                      "absolute -top-9 text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30",
+                      theme === 'terminal' ? "bg-white text-black border border-white" : "bg-green-600 text-white"
+                    )}
                   >
                     HEAD
                   </motion.div>
                 )}
+
+                {/* Node Label (Hash or Message snippet) */}
+                <div className={clsx(
+                  "absolute -bottom-5 text-[9px] whitespace-nowrap",
+                  theme === 'terminal' ? 'text-slate-400' : 'text-slate-500'
+                )}>
+                  {node.message.length > 15 ? node.message.substring(0, 15) + '...' : node.message}
+                </div>
 
                 {/* Hover Tooltip */}
                 <div className="absolute top-10 w-40 text-center text-xs text-slate-300 bg-slate-900/95 border border-slate-700 px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl z-20">

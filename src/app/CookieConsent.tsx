@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTheme } from '@/components/ThemeProvider';
 
 export default function CookieConsent() {
   const [show, setShow] = useState(false);
+  const { theme } = useTheme();
 
   useEffect(() => {
     // Check if the user has already dismissed the consent
@@ -36,7 +38,11 @@ export default function CookieConsent() {
         <div className="flex shrink-0">
           <button 
             onClick={handleAccept}
-            className="bg-primary hover:bg-blue-500 text-white font-bold py-2.5 px-6 rounded-full transition-colors shadow-lg hover:shadow-primary/30"
+            className={`font-bold py-2.5 px-6 rounded-full transition-colors shadow-lg ${
+              theme === 'terminal' 
+                ? 'bg-black text-white border border-white hover:bg-white hover:text-black' 
+                : 'bg-primary text-white border border-transparent hover:bg-blue-500 hover:shadow-primary/30'
+            }`}
           >
             Got it, thanks!
           </button>
