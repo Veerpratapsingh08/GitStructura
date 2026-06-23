@@ -14,7 +14,7 @@ export default function Home() {
   const { theme } = useTheme();
 
   return (
-    <div className="flex flex-col min-h-screen font-display bg-[#0a0f1a] overflow-hidden relative">
+    <div className={`flex flex-col min-h-screen font-display overflow-hidden relative ${theme === 'terminal' ? 'bg-black' : 'bg-[#0a0f1a]'}`}>
       {/* Dynamic Backgrounds based on Theme */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         {theme === 'terminal' ? (
@@ -248,7 +248,7 @@ export default function Home() {
 
       </main>
 
-      <footer className="py-8 text-center border-t border-white/5 bg-background/80 backdrop-blur-md relative z-10 flex flex-col items-center gap-3">
+      <footer className={`py-8 text-center border-t relative z-10 flex flex-col items-center gap-3 ${theme === 'terminal' ? 'bg-black border-white/20' : 'border-white/5 bg-background/80 backdrop-blur-md'}`}>
         <p className="text-slate-400 text-sm font-medium">
           Made by <a href="https://veerpratapsingh.vercel.app" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-blue-400 animate-pulse hover:animate-none inline-block transition-colors underline decoration-primary/30 hover:decoration-blue-400/50 underline-offset-4">Veer Pratap Singh</a>.
         </p>
