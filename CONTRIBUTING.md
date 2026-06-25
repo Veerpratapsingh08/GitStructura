@@ -9,7 +9,7 @@ Thanks for your interest in contributing! This document explains how to get star
 ```bash
 # 1. Fork the repo on GitHub, then clone your fork
 git clone https://github.com/YOUR_USERNAME/Github-Visualizer.git
-cd Github-Visualizer/github-visualizer
+cd Github-Visualizer
 
 # 2. Install dependencies
 npm install
@@ -88,7 +88,8 @@ src/
 ├── app/                    # Next.js pages
 │   ├── page.tsx           # Landing page
 │   ├── visualize/         # Visualization page
-│   └── learn/             # Git learning page
+│   ├── learn/             # Git learning page
+│   └── privacy/           # Privacy policy
 ├── features/
 │   ├── visualizer/        # 3D treemap components
 │   │   ├── CityScene.tsx  # Main 3D canvas

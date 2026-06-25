@@ -65,7 +65,7 @@ This project believes in:
 ```bash
 # Clone the repository
 git clone https://github.com/Veerpratapsingh08/Github-Visualizer.git
-cd Github-Visualizer/github-visualizer
+cd Github-Visualizer
 
 # Install dependencies
 npm install
@@ -87,7 +87,6 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Things this project intentionally does not do:
 
 - **No backend** — Everything runs client-side
-- **No analytics/tracking** — Your data stays securely in your browser
 - **No historical analysis** — We show current state, not trends
 
 ---
