@@ -84,7 +84,7 @@ export default function Home() {
               className="w-full lg:w-1/2 relative group"
             >
                 <div className="relative rounded-xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-sm">
-                     <Image src="/images/hero.png" alt="3D Code Visualization" width={1200} height={800} className="w-full h-auto object-cover opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700" priority />
+                     <Image src="/images/terminal.png" alt="Interactive Git Learning" width={1200} height={800} className="w-full h-auto object-cover opacity-90 mix-blend-luminosity hover:mix-blend-normal transition-all duration-700" priority />
                 </div>
             </motion.div>
         </div>

@@ -3,7 +3,7 @@ export type RepoFile = {
   mode: string;
   type: "blob" | "tree";
   sha: string;
-  size?: number; // Size in bytes
+  size?: number;
   url: string;
 };
 
@@ -14,7 +14,7 @@ export type RepoTree = {
   truncated: boolean;
 };
 
-// Rate limit helper
+
 async function checkRateLimit(response: Response) {
   if (response.status === 403 || response.status === 429) {
     const reset = response.headers.get("x-ratelimit-reset");
@@ -31,7 +31,7 @@ export const fetchRepoTree = async (owner: string, repo: string, token?: string)
     headers["Authorization"] = `Bearer ${token}`;
   }
 
-  // 1. Get default branch sha
+
   const repoRes = await fetch(`https://api.github.com/repos/${owner}/${repo}`, { headers });
   await checkRateLimit(repoRes);
   if (!repoRes.ok) throw new Error("Repository not found");
@@ -39,7 +39,7 @@ export const fetchRepoTree = async (owner: string, repo: string, token?: string)
   const repoData = await repoRes.json();
   const defaultBranch = repoData.default_branch;
 
-  // 2. Get Tree recursively
+
   const treeRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`, { headers });
   await checkRateLimit(treeRes);
   if (!treeRes.ok) throw new Error("Failed to fetch tree");
@@ -52,13 +52,8 @@ export const fetchRepoTree = async (owner: string, repo: string, token?: string)
   const blobs = files.filter(f => f.type === 'blob');
   
   if (blobs.length > MAX_FILES) {
-    // Sort blobs by size descending
     blobs.sort((a, b) => (b.size || 0) - (a.size || 0));
-    
-    // Keep top MAX_FILES blobs
     const topBlobs = new Set(blobs.slice(0, MAX_FILES).map(b => b.path));
-    
-    // Filter the original array, keeping all trees (folders) and only the top blobs
     files = files.filter(f => f.type === 'tree' || topBlobs.has(f.path));
     
     (files as any).isCapped = true;
@@ -75,7 +70,7 @@ export const parseRepoUrl = (url: string) => {
       return { owner: parts[0], repo: parts[1] };
     }
   } catch (e) {
-    // Handle "owner/repo" format without https
+
     const parts = url.split("/").filter(Boolean);
     if (parts.length === 2) {
       return { owner: parts[0], repo: parts[1] };

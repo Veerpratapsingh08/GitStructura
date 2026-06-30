@@ -1,11 +1,10 @@
 import { create } from 'zustand';
 
-// Types for our simulated Git Graph
 export type GitNode = {
-  id: string; // Commit hash (short)
+  id: string;
   message: string;
-  parentIds: string[]; // Support for multiple parents (merges)
-  branch?: string; // If this node is a branch tip
+  parentIds: string[];
+  branch?: string;
 };
 
 export type Scenario = {
@@ -202,16 +201,16 @@ export const SCENARIOS: Scenario[] = [
 
 export type GitState = {
   nodes: GitNode[];
-  HEAD: string | null; // ID of the current commit
-  branches: Record<string, string>; // branchName -> commitId
+  HEAD: string | null;
+  branches: Record<string, string>;
   currentBranch: string;
-  staging: string[]; // List of files staged
-  workingDirectory: string[]; // List of modified files (simulated)
-  isInitialized: boolean; // Whether git init has been run
+  staging: string[];
+  workingDirectory: string[];
+  isInitialized: boolean;
   currentScenarioId: string | null;
   completedScenarios: string[];
   terminalInput: string;
-  stashes: string[][]; // Array of saved working directory states
+  stashes: string[][];
   isMerging: boolean;
   conflictedFiles: string[];
   tags: Record<string, string>;
@@ -226,7 +225,7 @@ type GitActions = {
   branch: (name: string) => void;
   merge: (sourceBranch: string) => void;
   touch: (file: string) => void;
-  reset: () => void; // Hard reset to initial state
+  reset: () => void;
   setScenario: (id: string | null) => void;
   completeScenario: (id: string) => void;
   setTerminalInput: (input: string) => void;
@@ -248,7 +247,6 @@ type GitActions = {
   restore: (file: string) => void;
 };
 
-// Helper to generate random hash
 const generateHash = () => Math.random().toString(16).substring(2, 9);
 
 export const useGitStore = create<GitState & GitActions>((set, get) => ({
@@ -310,7 +308,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
   commit: (message) => {
     set((state) => {
       if (state.staging.length === 0 && state.nodes.length > 0) {
-          return state; // Prevent empty commits unless it's initial? Actually git allow-empty exists but let's block for now
+          return state;
       }
 
       const newCommitId = generateHash();
@@ -341,7 +339,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
      set((state) => {
          if (!state.HEAD) return state;
          return {
-             branches: { ...state.branches, [name]: state.HEAD } // Create ref
+             branches: { ...state.branches, [name]: state.HEAD }
          };
      });
   },
@@ -356,7 +354,6 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
                   reflogHistory: [`${hash} HEAD@{0}: checkout: moving to ${target}`, ...state.reflogHistory]
               };
           }
-          // Simple detached HEAD check
           const node = state.nodes.find(n => n.id === target || n.id.startsWith(target));
           if (node) {
                return {
@@ -376,7 +373,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
           const targetCommitId = state.branches[targetBranch];
 
           if (!sourceCommitId || !targetCommitId) return state;
-          if (sourceCommitId === targetCommitId) return state; // Already up to date
+          if (sourceCommitId === targetCommitId) return state;
 
           if (sourceBranch === 'conflict-branch') {
               return {
@@ -388,7 +385,6 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
               }
           }
 
-          // Simplified merge: Create a merge commit connecting both
           const mergeCommitId = generateHash();
           const newNode: GitNode = {
               id: mergeCommitId,
@@ -657,7 +653,7 @@ export const useGitStore = create<GitState & GitActions>((set, get) => ({
          return {
              HEAD: targetNode.id,
              branches: state.currentBranch !== 'DETACHED' ? { ...state.branches, [state.currentBranch]: targetNode.id } : state.branches,
-             staging: [...state.staging, 'uncommitted_change.js'], // Simulating uncommitted work being staged
+             staging: [...state.staging, 'uncommitted_change.js'],
              reflogHistory: newReflog
          };
      });
