@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import clsx from "clsx";
 import { ChevronDown } from "lucide-react";
 import { useGitStore, SCENARIOS } from "./GitEngine";
-import { useTheme } from "@/components/ThemeProvider";
 
 type Command = {
   command: string;
@@ -199,23 +198,22 @@ export const TutorialSidebar = () => {
   const [openTopic, setOpenTopic] = useState<string | null>("Git Introduction");
   
   const git = useGitStore();
-  const { theme } = useTheme();
 
   const handleCommandClick = (cmd: string) => {
     git.setTerminalInput(cmd);
   };
 
   return (
-    <aside className={`w-80 flex flex-col border-r shrink-0 h-full overflow-hidden ${theme === 'terminal' ? 'bg-black border-white/20' : 'bg-[#0d1117] border-[#30363d]'}`}>
+    <aside className="w-80 flex flex-col border-r shrink-0 h-full overflow-hidden bg-[var(--bg-secondary)] border-[var(--border-color)]">
       {/* Header Tabs */}
-      <div className={`flex border-b ${theme === 'terminal' ? 'border-white/20' : 'border-[#30363d]'}`}>
+      <div className="flex border-b border-[var(--border-color)]">
         <button 
           onClick={() => setActiveTab('scenarios')}
           className={clsx(
-            "flex-1 py-3 text-sm font-bold border-b-2 transition-colors",
+            "flex-1 py-3 text-sm font-semibold border-b-2 transition-colors",
             activeTab === 'scenarios' 
-              ? (theme === 'terminal' ? "border-white text-white" : "border-[#256af4] text-[#256af4]") 
-              : "border-transparent text-gray-500 hover:text-gray-300"
+              ? "border-[var(--text-primary)] text-[var(--text-primary)]" 
+              : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           )}
         >
           Scenarios
@@ -223,10 +221,10 @@ export const TutorialSidebar = () => {
         <button 
           onClick={() => setActiveTab('reference')}
           className={clsx(
-            "flex-1 py-3 text-sm font-bold border-b-2 transition-colors",
+            "flex-1 py-3 text-sm font-semibold border-b-2 transition-colors",
             activeTab === 'reference' 
-              ? (theme === 'terminal' ? "border-white text-white" : "border-[#256af4] text-[#256af4]") 
-              : "border-transparent text-gray-500 hover:text-gray-300"
+              ? "border-[var(--text-primary)] text-[var(--text-primary)]" 
+              : "border-transparent text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           )}
         >
           Reference
@@ -246,26 +244,26 @@ export const TutorialSidebar = () => {
                   className={clsx(
                     "border rounded-xl p-4 transition-all",
                     isActive 
-                      ? (theme === 'terminal' ? "border-white bg-white/10 shadow-none" : "border-[#256af4] bg-[#256af4]/5 shadow-[0_0_15px_rgba(37,106,244,0.15)]") 
-                      : (theme === 'terminal' ? "border-white/20 bg-black" : "border-[#30363d] bg-[#161b22]"),
+                      ? "border-[var(--text-primary)] bg-[var(--bg-primary)] shadow-sm"
+                      : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:bg-[var(--hover-bg)]",
                     isCompleted && !isActive && "opacity-70"
                   )}
                 >
                   <div className="flex justify-between items-start mb-2">
-                    <h3 className={clsx("font-bold text-sm", isActive ? "text-white" : "text-gray-300")}>
+                    <h3 className={clsx("font-semibold text-sm", isActive ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>
                       {scenario.title}
                     </h3>
-                    {isCompleted && <span className="material-symbols-outlined text-green-500 text-sm">check_circle</span>}
+                    {isCompleted && <span className="material-symbols-outlined text-green-600 text-sm">check_circle</span>}
                   </div>
-                  <p className="text-xs text-gray-400 mb-4">{scenario.description}</p>
+                  <p className="text-xs text-[var(--text-secondary)] mb-4 leading-relaxed">{scenario.description}</p>
                   
                   {isActive ? (
-                    <div className={`rounded-lg p-3 border ${theme === 'terminal' ? 'bg-black border-white/20' : 'bg-[#0d1117] border-[#30363d]/50'}`}>
-                      <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2">Suggested Commands</p>
+                    <div className="rounded-lg p-3 border border-[var(--border-color)] bg-[var(--bg-secondary)]">
+                      <p className="text-[10px] font-bold text-[var(--text-secondary)] uppercase tracking-wider mb-2">Suggested Commands</p>
                       <div className="space-y-2">
                         {scenario.hints.map((hint, i) => (
-                          <div key={i} className="text-xs text-gray-300 flex items-start gap-2">
-                            <span className={`mt-0.5 ${theme === 'terminal' ? 'text-white' : 'text-[#256af4]'}`}>•</span>
+                          <div key={i} className="text-xs text-[var(--text-secondary)] flex items-start gap-2">
+                            <span className="mt-0.5 text-[var(--text-primary)]">•</span>
                             <span>{hint}</span>
                           </div>
                         ))}
@@ -274,7 +272,7 @@ export const TutorialSidebar = () => {
                   ) : (
                     <button 
                       onClick={() => git.setScenario(scenario.id)}
-                      className={`text-xs font-medium ${theme === 'terminal' ? 'text-white hover:text-gray-300' : 'text-[#256af4] hover:text-blue-400'}`}
+                      className="text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)] uppercase tracking-widest transition-colors"
                     >
                       {isCompleted ? "Replay Scenario" : "Start Scenario"}
                     </button>
@@ -287,51 +285,50 @@ export const TutorialSidebar = () => {
           <div>
             {/* Existing Reference List */}
             {gitCourse.map((module, moduleIdx) => (
-              <div key={module.name} className={`border-b ${theme === 'terminal' ? 'border-white/20' : 'border-[#30363d]/50'}`}>
+              <div key={module.name} className="border-b border-[var(--border-color)]">
                 <button
                   onClick={() => setOpenModule(openModule === moduleIdx ? -1 : moduleIdx)}
                   className={clsx(
-                    "w-full flex items-center justify-between px-4 py-3 transition-colors",
-                    theme === 'terminal' ? "hover:bg-white/10" : "hover:bg-[#161b22]",
-                    openModule === moduleIdx && (theme === 'terminal' ? "bg-white/10" : "bg-[#161b22]")
+                    "w-full flex items-center justify-between px-4 py-3 transition-colors hover:bg-[var(--hover-bg)]",
+                    openModule === moduleIdx && "bg-[var(--hover-bg)]"
                   )}
                 >
                   <div className="flex items-center gap-3">
                     <span className={clsx(
-                      "material-symbols-outlined text-lg",
-                      openModule === moduleIdx ? (theme === 'terminal' ? "text-white" : "text-[#256af4]") : "text-gray-500"
+                      "material-symbols-outlined text-[18px]",
+                      openModule === moduleIdx ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                     )}>{module.icon}</span>
                     <span className={clsx(
-                      "font-medium text-sm",
-                      openModule === moduleIdx ? "text-white" : "text-gray-300"
+                      "font-semibold text-sm tracking-tight",
+                      openModule === moduleIdx ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]"
                     )}>{module.name}</span>
                   </div>
-                  <ChevronDown size={16} className={clsx("text-gray-500 transition-transform", openModule === moduleIdx && (theme === 'terminal' ? "rotate-180 text-white" : "rotate-180 text-[#256af4]"))} />
+                  <ChevronDown size={16} className={clsx("text-[var(--text-secondary)] transition-transform", openModule === moduleIdx && "rotate-180 text-[var(--text-primary)]")} />
                 </button>
                 {openModule === moduleIdx && (
-                  <div className="bg-[#0d1117] pb-2">
+                  <div className="bg-[var(--bg-primary)] pb-2">
                     {module.topics.map((topic) => (
                       <div key={topic.title}>
                         <button
                           onClick={() => setOpenTopic(openTopic === topic.title ? null : topic.title)}
                           className={clsx(
-                            "w-full flex items-center justify-between pl-11 pr-4 py-2 text-left hover:bg-[#161b22]/50 transition-colors",
-                            openTopic === topic.title && "bg-[#256af4]/10"
+                            "w-full flex items-center justify-between pl-11 pr-4 py-2 text-left hover:bg-[var(--hover-bg)] transition-colors",
+                            openTopic === topic.title && "bg-[var(--hover-bg)]"
                           )}
                         >
-                          <span className={clsx("text-sm", openTopic === topic.title ? "text-[#256af4] font-medium" : "text-gray-400")}>{topic.title}</span>
-                          <span className="text-[10px] text-gray-600 bg-[#21262d] px-1.5 py-0.5 rounded">{topic.commands.length}</span>
+                          <span className={clsx("text-sm font-medium", openTopic === topic.title ? "text-[var(--text-primary)]" : "text-[var(--text-secondary)]")}>{topic.title}</span>
+                          <span className="text-[10px] text-[var(--text-primary)] bg-[var(--bg-secondary)] border border-[var(--border-color)] px-1.5 py-0.5 rounded-md font-mono">{topic.commands.length}</span>
                         </button>
                         {openTopic === topic.title && (
-                          <div className="pl-11 pr-4 pb-3 space-y-2">
+                          <div className="pl-11 pr-4 pb-3 pt-1 space-y-2">
                             {topic.commands.map((cmd, idx) => (
                               <div 
                                 key={idx}
                                 onClick={() => handleCommandClick(cmd.command)}
-                                className="bg-[#161b22] border border-[#30363d]/50 rounded-lg p-2.5 hover:border-[#256af4]/50 transition-colors cursor-pointer group"
+                                className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-md p-2.5 hover:border-[var(--text-primary)] transition-colors cursor-pointer group shadow-sm"
                               >
-                                <code className="text-xs font-mono text-green-400 block mb-1 group-hover:text-green-300">{cmd.command}</code>
-                                <span className="text-[11px] text-gray-500">{cmd.description}</span>
+                                <code className="text-xs font-mono text-[var(--text-primary)] block mb-1">{cmd.command}</code>
+                                <span className="text-[11px] text-[var(--text-secondary)] leading-relaxed">{cmd.description}</span>
                               </div>
                             ))}
                           </div>
@@ -346,8 +343,8 @@ export const TutorialSidebar = () => {
         )}
       </div>
 
-      <div className="p-3 border-t border-[#30363d] bg-[#0d1117]">
-        <p className="text-[10px] text-gray-600 text-center">
+      <div className="p-3 border-t border-[var(--border-color)] bg-[var(--bg-secondary)]">
+        <p className="text-[10px] text-[var(--text-secondary)] text-center tracking-widest uppercase font-semibold">
           {activeTab === 'scenarios' ? "Complete the goal to advance!" : "Click any command to try it"}
         </p>
       </div>

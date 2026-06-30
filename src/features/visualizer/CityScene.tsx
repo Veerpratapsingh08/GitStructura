@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Text, Html, RoundedBox, Stars, Sparkles, Instances, Instance } from "@react-three/drei";
+import React, { useMemo, useState } from "react";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls, Html, Instances, Instance } from "@react-three/drei";
 import { RepoFile } from "./Fetcher";
 import { buildTreemap, TreemapNode } from "./CityBuilder";
 import * as THREE from "three";
+import { useTheme } from "@/components/ThemeProvider";
 
 const FileInstanceBlock = ({ 
   node, 
@@ -44,15 +45,15 @@ const FileInstanceBlock = ({
       
       {hovered && (
         <Html distanceFactor={50} center position={[0, height + 3, 0]} zIndexRange={[100, 0]}>
-          <div className="bg-[#0d1117]/98 text-white p-4 rounded-xl border border-blue-500/60 shadow-2xl backdrop-blur-xl pointer-events-none min-w-[250px] max-w-[400px]">
-            <div className="font-bold text-blue-300 text-base mb-2 flex items-center gap-3">
-              <span className="w-4 h-4 rounded shrink-0" style={{ backgroundColor: node.color }}></span>
+          <div className="bg-[var(--bg-primary)] text-[var(--text-primary)] p-4 rounded-md border border-[var(--border-color)] shadow-lg pointer-events-none min-w-[250px] max-w-[400px]">
+            <div className="font-bold text-[var(--text-primary)] text-base mb-2 flex items-center gap-3">
+              <span className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: node.color }}></span>
               <span className="truncate">{node.name}</span>
             </div>
-            <div className="text-sm text-slate-300 mb-2">
-              <span className="text-slate-500">Size:</span> {(node.size / 1024).toFixed(1)} KB
+            <div className="text-sm text-[var(--text-secondary)] mb-2 font-medium">
+              <span className="opacity-70">Size:</span> {(node.size / 1024).toFixed(1)} KB
             </div>
-            <div className="text-xs text-slate-500 font-mono bg-black/40 px-2 py-1.5 rounded break-all">
+            <div className="text-xs text-[var(--text-primary)] font-mono bg-[var(--bg-secondary)] border border-[var(--border-color)] px-2 py-1.5 rounded-sm break-all">
               {node.path}
             </div>
           </div>
@@ -62,21 +63,25 @@ const FileInstanceBlock = ({
   );
 };
 
-const FolderOutline = ({ node, depth }: { node: TreemapNode; depth: number }) => {
+const FolderOutline = ({ node, depth, theme }: { node: TreemapNode; depth: number, theme: string }) => {
   if (node.width < 2 || node.height < 2) return null;
   
   const centerX = node.x + node.width / 2;
   const centerZ = node.y + node.height / 2;
-  const opacity = Math.max(0.15, 0.5 - depth * 0.08);
+  const opacity = Math.max(0.05, 0.2 - depth * 0.05);
   
   const showLabel = node.width > 10 && node.height > 10 && depth <= 3;
+  
+  // Architectural blueprint colors
+  const folderColor = theme === 'dark' ? "#FFFFFF" : "#000000";
+  const edgeColor = theme === 'dark' ? "#555555" : "#CCCCCC";
   
   return (
     <group position={[centerX, 0.05 + depth * 0.02, centerZ]}>
       <mesh rotation={[-Math.PI / 2, 0, 0]}>
         <planeGeometry args={[node.width - 0.3, node.height - 0.3]} />
         <meshBasicMaterial 
-          color={depth === 0 ? "#1e293b" : depth === 1 ? "#1a2332" : "#0f172a"} 
+          color={folderColor} 
           transparent 
           opacity={opacity}
         />
@@ -85,9 +90,9 @@ const FolderOutline = ({ node, depth }: { node: TreemapNode; depth: number }) =>
       <lineSegments>
         <edgesGeometry args={[new THREE.PlaneGeometry(node.width - 0.3, node.height - 0.3)]} />
         <lineBasicMaterial 
-          color={depth === 0 ? "#3b82f6" : depth === 1 ? "#6366f1" : "#475569"} 
+          color={edgeColor} 
           transparent 
-          opacity={depth <= 1 ? 0.8 : 0.4} 
+          opacity={0.5} 
         />
       </lineSegments>
       
@@ -99,17 +104,14 @@ const FolderOutline = ({ node, depth }: { node: TreemapNode; depth: number }) =>
           style={{ pointerEvents: 'none' }}
         >
           <div 
-            className="px-2 py-1 rounded text-center whitespace-nowrap"
+            className="px-2 py-1 text-center whitespace-nowrap bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-sm shadow-sm"
             style={{
-              backgroundColor: depth <= 1 ? 'rgba(59, 130, 246, 0.8)' : 'rgba(71, 85, 105, 0.7)',
-              color: 'white',
               fontSize: depth === 0 ? '14px' : depth === 1 ? '12px' : '10px',
-              fontWeight: depth <= 1 ? 'bold' : 'normal',
-              textShadow: '0 1px 3px rgba(0,0,0,0.5)',
-              border: '1px solid rgba(255,255,255,0.2)',
+              fontWeight: depth <= 1 ? '600' : '400',
+              opacity: 0.8
             }}
           >
-            📁 {node.name}
+             {node.name}
           </div>
         </Html>
       )}
@@ -120,11 +122,13 @@ const FolderOutline = ({ node, depth }: { node: TreemapNode; depth: number }) =>
 const CitySceneRenderer = ({ 
   treemap, 
   maxSize,
-  onHover
+  onHover,
+  theme
 }: { 
   treemap: TreemapNode; 
   maxSize: number;
   onHover: (node: TreemapNode | null) => void;
+  theme: string;
 }) => {
   const files: TreemapNode[] = [];
   const folders: { node: TreemapNode, depth: number }[] = [];
@@ -141,12 +145,12 @@ const CitySceneRenderer = ({
   return (
     <group>
       {folders.map(f => (
-        <FolderOutline key={f.node.path} node={f.node} depth={f.depth} />
+        <FolderOutline key={f.node.path} node={f.node} depth={f.depth} theme={theme} />
       ))}
       
       <Instances limit={Math.max(files.length, 1)}>
         <boxGeometry />
-        <meshStandardMaterial roughness={0.3} metalness={0.1} />
+        <meshStandardMaterial roughness={0.2} metalness={0.1} />
         {files.map(f => (
           <FileInstanceBlock key={f.path} node={f} maxSize={maxSize} onHover={onHover} />
         ))}
@@ -157,6 +161,7 @@ const CitySceneRenderer = ({
 
 export const CityScene = ({ files }: { files: RepoFile[] }) => {
   const [hoveredNode, setHoveredNode] = useState<TreemapNode | null>(null);
+  const { theme } = useTheme();
   
   const treemap = useMemo(() => buildTreemap(files), [files]);
   
@@ -172,6 +177,11 @@ export const CityScene = ({ files }: { files: RepoFile[] }) => {
 
   const center = treemap.width / 2;
 
+  const bgColor = theme === 'dark' ? '#0A0A0A' : '#FAFAFA';
+  const gridColor = theme === 'dark' ? '#333333' : '#EAEAEA';
+  const gridCenterColor = theme === 'dark' ? '#555555' : '#CCCCCC';
+  const groundColor = theme === 'dark' ? '#111111' : '#FFFFFF';
+
   return (
     <Canvas
       gl={{ antialias: true }}
@@ -179,15 +189,13 @@ export const CityScene = ({ files }: { files: RepoFile[] }) => {
         position: [center * 1.5, center * 1.2, center * 1.5],
         fov: 50,
         near: 0.1,
-        far: 1000
+        far: Math.max(3000, center * 10)
       }}
     >
-      <ambientLight intensity={0.6} />
-      <directionalLight position={[100, 100, 50]} intensity={0.8} />
+      <color attach="background" args={[bgColor]} />
+      <ambientLight intensity={theme === 'dark' ? 0.4 : 0.8} />
+      <directionalLight position={[100, 100, 50]} intensity={theme === 'dark' ? 0.8 : 0.5} />
       <directionalLight position={[-50, 50, -50]} intensity={0.3} />
-
-      <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-      <Sparkles count={200} scale={treemap.width * 2} size={2} speed={0.4} opacity={0.2} color="#4ade80" />
 
       <OrbitControls
         target={[center, 0, center]}
@@ -198,22 +206,22 @@ export const CityScene = ({ files }: { files: RepoFile[] }) => {
         autoRotateSpeed={0.3}
         maxPolarAngle={Math.PI / 2.2}
         minDistance={20}
-        maxDistance={400}
+        maxDistance={Math.max(1000, center * 4)}
       />
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[center, -0.1, center]}>
         <planeGeometry args={[treemap.width * 1.5, treemap.height * 1.5]} />
-        <meshStandardMaterial color="#0a0a12" roughness={0.95} />
+        <meshStandardMaterial color={groundColor} roughness={0.9} />
       </mesh>
 
       <gridHelper
-        args={[treemap.width * 1.3, 30, "#1a1a2e", "#12121a"]}
+        args={[treemap.width * 1.3, 30, gridCenterColor, gridColor]}
         position={[center, 0, center]}
       />
 
-      <CitySceneRenderer treemap={treemap} maxSize={maxSize} onHover={setHoveredNode} />
+      <CitySceneRenderer treemap={treemap} maxSize={maxSize} onHover={setHoveredNode} theme={theme} />
 
-      <fog attach="fog" args={['#0a0a12', 30, 250]} />
+      <fog attach="fog" args={[bgColor, Math.max(100, center * 1.5), Math.max(800, center * 5)]} />
     </Canvas>
   );
 };

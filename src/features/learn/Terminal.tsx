@@ -484,25 +484,25 @@ export const Terminal = () => {
   };
 
   return (
-    <div className={`flex-1 flex flex-col min-w-0 relative ${theme === 'terminal' ? 'bg-black' : 'bg-[#0d1117]'}`}>
+    <div className="flex-1 flex flex-col min-w-0 relative bg-[var(--bg-primary)]">
       {/* Terminal Header */}
-      <div className={`h-10 border-b flex items-center px-4 justify-between shrink-0 ${theme === 'terminal' ? 'bg-black border-white/20' : 'bg-[#161b22] border-[#30363d]'}`}>
+      <div className="h-10 border-b flex items-center px-4 justify-between shrink-0 bg-[var(--bg-secondary)] border-[var(--border-color)]">
         <div className="flex items-center gap-2">
           <span className="flex gap-1.5">
             <span className="size-3 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer transition-colors"></span>
             <span className="size-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 cursor-pointer transition-colors"></span>
             <span className="size-3 rounded-full bg-green-500/80 hover:bg-green-500 cursor-pointer transition-colors"></span>
           </span>
-          <span className="ml-4 text-xs font-mono text-gray-400 flex items-center gap-1">
+          <span className="ml-4 text-xs font-mono text-[var(--text-secondary)] flex items-center gap-1">
             <span className="material-symbols-outlined text-[14px]">terminal</span>
             user@gitviz:~/project-alpha
           </span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500 font-mono">bash</span>
+          <span className="text-xs text-[var(--text-secondary)] font-mono">bash</span>
           <button 
             onClick={() => git.reset?.()}
-            className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+            className="text-xs text-[var(--text-secondary)] hover:text-red-500 transition-colors"
             title="Reset Repository (Cmd+R)"
           >
             Reset
@@ -520,10 +520,10 @@ export const Terminal = () => {
             key={i} 
             className={clsx(
               "mb-0.5 animate-in fade-in-0 slide-in-from-bottom-1 duration-150",
-              entry.type === 'command' && "text-white mt-3 font-medium",
-              entry.type === 'output' && "text-gray-400",
-              entry.type === 'error' && "text-red-400",
-              entry.type === 'success' && "text-green-400",
+              entry.type === 'command' && "text-[var(--text-primary)] mt-3 font-medium",
+              entry.type === 'output' && "text-[var(--text-secondary)]",
+              entry.type === 'error' && "text-red-600 dark:text-red-400",
+              entry.type === 'success' && "text-green-600 dark:text-green-400",
             )}
           >
             {entry.content}
@@ -532,11 +532,11 @@ export const Terminal = () => {
         
         {/* Active Line */}
         <div className="flex items-center gap-2 group mt-4">
-          <span className="text-green-500 font-bold">➜</span>
-          <span className="text-blue-400 font-bold">~/project-alpha</span>
+          <span className="text-green-600 dark:text-green-500 font-bold">➜</span>
+          <span className="text-blue-600 dark:text-blue-400 font-bold">~/project-alpha</span>
           <span className={clsx(
             "font-bold transition-colors duration-300",
-            git.isInitialized ? "text-yellow-400" : "text-gray-500"
+            git.isInitialized ? "text-yellow-600 dark:text-yellow-400" : "text-[var(--text-secondary)]"
           )}>
             git:({git.currentBranch || 'main'})
           </span>
@@ -544,7 +544,7 @@ export const Terminal = () => {
             <input
               ref={inputRef}
               autoComplete="off"
-              className="w-full bg-transparent border-none p-0 text-white focus:ring-0 focus:outline-none font-mono caret-white"
+              className="w-full bg-transparent border-none p-0 text-[var(--text-primary)] focus:ring-0 focus:outline-none font-mono caret-[var(--text-primary)]"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
@@ -558,7 +558,7 @@ export const Terminal = () => {
       </div>
 
       {/* Keyboard shortcuts hint */}
-      <div className="absolute bottom-3 right-3 text-[10px] text-gray-600 font-mono">
+      <div className="absolute bottom-3 right-3 text-[10px] text-[var(--text-secondary)] font-mono">
         ↑↓ history · Cmd+R reset · help
       </div>
     </div>

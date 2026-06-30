@@ -45,7 +45,26 @@ export const fetchRepoTree = async (owner: string, repo: string, token?: string)
   if (!treeRes.ok) throw new Error("Failed to fetch tree");
 
   const treeData: RepoTree = await treeRes.json();
-  return treeData.tree;
+  let files = treeData.tree;
+
+  // Performance cap: limit to top 5000 largest files to prevent WebGL crashing
+  const MAX_FILES = 5000;
+  const blobs = files.filter(f => f.type === 'blob');
+  
+  if (blobs.length > MAX_FILES) {
+    // Sort blobs by size descending
+    blobs.sort((a, b) => (b.size || 0) - (a.size || 0));
+    
+    // Keep top MAX_FILES blobs
+    const topBlobs = new Set(blobs.slice(0, MAX_FILES).map(b => b.path));
+    
+    // Filter the original array, keeping all trees (folders) and only the top blobs
+    files = files.filter(f => f.type === 'tree' || topBlobs.has(f.path));
+    
+    (files as any).isCapped = true;
+  }
+
+  return files;
 };
 
 export const parseRepoUrl = (url: string) => {

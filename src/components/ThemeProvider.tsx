@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 
-type Theme = "cyberpunk" | "terminal";
+type Theme = "light" | "dark";
 
 interface ThemeContextType {
   theme: Theme;
@@ -12,28 +12,30 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("cyberpunk");
+  const [theme, setTheme] = useState<Theme>("light");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("codecity-theme") as Theme;
-    if (savedTheme === "terminal" || savedTheme === "cyberpunk") {
+    if (savedTheme === "light" || savedTheme === "dark") {
       setTheme(savedTheme);
     }
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (theme === "terminal") {
-      document.body.classList.add("theme-terminal");
+    if (theme === "dark") {
+      document.body.classList.add("theme-dark");
+      document.body.classList.remove("theme-light");
     } else {
-      document.body.classList.remove("theme-terminal");
+      document.body.classList.add("theme-light");
+      document.body.classList.remove("theme-dark");
     }
     localStorage.setItem("codecity-theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme((prev) => (prev === "cyberpunk" ? "terminal" : "cyberpunk"));
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
 
   return (

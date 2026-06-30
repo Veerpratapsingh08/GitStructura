@@ -1,16 +1,14 @@
 "use client";
 
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { GitNode, useGitStore } from "./GitEngine";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
-import { useTheme } from "@/components/ThemeProvider";
 
 export const GraphView = () => {
   const { nodes, HEAD, branches, isInitialized } = useGitStore();
   const [newNodeId, setNewNodeId] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<GitNode | null>(null);
-  const { theme } = useTheme();
 
   // Track new commits for pulse animation
   useEffect(() => {
@@ -51,39 +49,33 @@ export const GraphView = () => {
   // Empty state
   if (!isInitialized) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
-        <div className="w-16 h-16 rounded-full bg-slate-800 border-2 border-dashed border-slate-600 flex items-center justify-center mb-4 animate-pulse">
-          <span className="material-symbols-outlined text-2xl text-slate-500">commit</span>
+      <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-[var(--bg-secondary)] text-[var(--text-primary)]">
+        <div className="w-16 h-16 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center mb-4 shadow-sm">
+          <span className="material-symbols-outlined text-2xl text-[var(--text-secondary)]">commit</span>
         </div>
-        <p className="text-slate-400 text-sm">No repository yet</p>
-        <p className="text-slate-500 text-xs mt-1">Run <code className="text-primary">git init</code> to start</p>
+        <p className="text-[var(--text-primary)] text-sm font-medium tracking-tight">No repository yet</p>
+        <p className="text-[var(--text-secondary)] text-xs mt-1">Run <code className="font-bold text-[var(--text-primary)]">git init</code> to start</p>
       </div>
     );
   }
 
   if (nodes.length === 0) {
     return (
-      <div className="w-full h-full flex flex-col items-center justify-center text-center p-8">
-        <div className="w-16 h-16 rounded-full bg-green-900/30 border-2 border-green-600/50 flex items-center justify-center mb-4">
-          <span className="material-symbols-outlined text-2xl text-green-500">check</span>
+      <div className="w-full h-full flex flex-col items-center justify-center text-center p-8 bg-[var(--bg-secondary)] text-[var(--text-primary)]">
+        <div className="w-16 h-16 rounded-full bg-[var(--bg-primary)] border border-green-500/50 flex items-center justify-center mb-4 shadow-sm">
+          <span className="material-symbols-outlined text-2xl text-green-600">check</span>
         </div>
-        <p className="text-slate-300 text-sm">Repository initialized!</p>
-        <p className="text-slate-500 text-xs mt-1">Make your first commit to see the graph</p>
+        <p className="text-[var(--text-primary)] text-sm font-medium tracking-tight">Repository initialized!</p>
+        <p className="text-[var(--text-secondary)] text-xs mt-1">Make your first commit to see the graph</p>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full h-full bg-transparent overflow-x-auto overflow-y-hidden">
+    <div className="relative w-full h-full bg-[var(--bg-secondary)] overflow-x-auto overflow-y-hidden">
       <div className="absolute inset-0 flex items-center p-10 min-w-max">
         {/* Edges */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none">
-          <defs>
-            <linearGradient id="edgeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#475569" />
-              <stop offset="100%" stopColor="#256af4" />
-            </linearGradient>
-          </defs>
           {nodes.map((node) =>
             node.parentIds.map((pid) => {
               const start = positions[pid];
@@ -97,7 +89,7 @@ export const GraphView = () => {
                   y1="50%"
                   x2={end.x}
                   y2="50%"
-                  stroke={isNewEdge ? "#256af4" : "#475569"}
+                  stroke={isNewEdge ? "var(--text-primary)" : "var(--border-color)"}
                   strokeWidth={isNewEdge ? 3 : 2}
                   initial={{ pathLength: 0, opacity: 0 }}
                   animate={{ pathLength: 1, opacity: 1 }}
@@ -136,10 +128,7 @@ export const GraphView = () => {
                 {/* Pulse ring for new commits */}
                 {isNew && (
                   <motion.div
-                    className={clsx(
-                      "absolute w-10 h-10 rounded-full border-2",
-                      theme === 'terminal' ? "border-white" : "border-primary"
-                    )}
+                    className="absolute w-10 h-10 rounded-full border-2 border-[var(--text-primary)]"
                     initial={{ scale: 1, opacity: 1 }}
                     animate={{ scale: 2, opacity: 0 }}
                     transition={{ duration: 1, ease: "easeOut" }}
@@ -149,21 +138,14 @@ export const GraphView = () => {
                 {/* Node Circle */}
                 <div
                   className={clsx(
-                    "w-8 h-8 rounded-full border-2 flex items-center justify-center z-10 transition-all duration-200 hover:scale-110",
-                    theme === 'terminal' ? [
-                      isHead && "border-white bg-white text-black shadow-none",
-                      !isHead && isMerge && "border-white bg-black text-white",
-                      !isHead && !isMerge && "border-slate-500 bg-black text-slate-300",
-                      "hover:border-white hover:bg-white/20"
-                    ] : [
-                      isHead && "border-green-400 bg-green-900 text-green-100 shadow-[0_0_12px_rgba(74,222,128,0.5)]",
-                      !isHead && isMerge && "border-purple-400 bg-purple-900 text-purple-100",
-                      !isHead && !isMerge && "border-slate-500 bg-slate-800 text-slate-400",
-                      "hover:border-white"
-                    ]
+                    "w-8 h-8 rounded-full border flex items-center justify-center z-10 transition-all duration-200 hover:scale-110",
+                    isHead && "border-[var(--text-primary)] bg-[var(--text-primary)] text-[var(--bg-primary)] shadow-md",
+                    !isHead && isMerge && "border-[var(--border-color)] bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200",
+                    !isHead && !isMerge && "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-primary)]",
+                    "hover:border-[var(--text-primary)]"
                   )}
                 >
-                  <span className="text-[9px] font-mono font-bold">{node.id.substring(0, 4)}</span>
+                  <span className="text-[9px] font-mono font-bold tracking-tight">{node.id.substring(0, 4)}</span>
                 </div>
 
                 {/* Branch Label */}
@@ -174,14 +156,12 @@ export const GraphView = () => {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
                     className={clsx(
-                      "absolute -top-9 text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30",
-                      theme === 'terminal' 
-                        ? "bg-white text-black border border-white" 
-                        : branchLabel === "main" ? "bg-blue-600 text-white" : "bg-purple-600 text-white"
+                      "absolute -top-9 text-[10px] px-2 py-0.5 rounded-sm shadow-sm whitespace-nowrap font-semibold tracking-wide uppercase z-30",
+                      "bg-[var(--text-primary)] text-[var(--bg-primary)] border border-transparent"
                     )}
                   >
                     {branchLabel}
-                    {isHead && <span className="ml-1 text-[8px] opacity-70">← HEAD</span>}
+                    {isHead && <span className="ml-1 text-[8px] opacity-70 font-mono">← HEAD</span>}
                   </motion.div>
                 )}
 
@@ -189,49 +169,27 @@ export const GraphView = () => {
                 {isHead && !branchLabel && (
                   <motion.div 
                     layoutId="head-pointer"
-                    className={clsx(
-                      "absolute -top-9 text-[10px] px-2 py-0.5 rounded shadow whitespace-nowrap font-medium z-30",
-                      theme === 'terminal' ? "bg-white text-black border border-white" : "bg-green-600 text-white"
-                    )}
+                    className="absolute -top-9 text-[10px] px-2 py-0.5 rounded-sm shadow-sm whitespace-nowrap font-semibold tracking-wide uppercase z-30 bg-[var(--text-primary)] text-[var(--bg-primary)] border border-[var(--text-primary)]"
                   >
                     HEAD
                   </motion.div>
                 )}
 
                 {/* Node Label (Hash or Message snippet) */}
-                <div className={clsx(
-                  "absolute -bottom-5 text-[9px] whitespace-nowrap",
-                  theme === 'terminal' ? 'text-slate-400' : 'text-slate-500'
-                )}>
+                <div className="absolute -bottom-6 text-[9px] whitespace-nowrap text-[var(--text-secondary)] font-medium bg-[var(--bg-primary)] px-1 rounded-sm">
                   {node.message.length > 15 ? node.message.substring(0, 15) + '...' : node.message}
                 </div>
 
                 {/* Hover Tooltip */}
-                <div className="absolute top-10 w-40 text-center text-xs text-slate-300 bg-slate-900/95 border border-slate-700 px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-xl z-20">
-                  <div className="font-mono text-[10px] text-slate-500 mb-1">{node.id}</div>
-                  <div className="text-slate-200">{node.message}</div>
-                  {isMerge && <div className="text-purple-400 text-[10px] mt-1">Merge commit</div>}
+                <div className="absolute top-10 w-40 text-center text-xs text-[var(--text-primary)] bg-[var(--bg-primary)] border border-[var(--border-color)] px-3 py-2 rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-lg z-20">
+                  <div className="font-mono text-[10px] text-[var(--text-secondary)] mb-1">{node.id}</div>
+                  <div className="font-medium">{node.message}</div>
+                  {isMerge && <div className="text-purple-600 dark:text-purple-400 text-[10px] mt-1 font-semibold uppercase tracking-widest">Merge commit</div>}
                 </div>
               </motion.div>
             );
           })}
         </AnimatePresence>
-      </div>
-
-      {/* Legend */}
-      <div className="absolute bottom-3 left-3 flex items-center gap-4 text-[10px] text-slate-500 font-mono">
-        <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-green-600 border border-green-400 shadow-[0_0_6px_rgba(74,222,128,0.5)]"></span>
-          HEAD
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-slate-800 border-2 border-slate-500"></span>
-          Commit
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-3 h-3 rounded-full bg-purple-900 border-2 border-purple-400"></span>
-          Merge
-        </span>
       </div>
     </div>
   );
