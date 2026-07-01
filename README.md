@@ -1,10 +1,10 @@
 # GitHub Visualizer
 
-Welcome to the GitHub Visualizer! This project is a minimalist, interactive tool designed to visualize GitHub data (such as contributions, repositories, or network graphs) in a 3D space using Next.js and React Three Fiber.
+Welcome to the GitHub Visualizer! This project is a minimalist, interactive tool designed to visualize GitHub data (such as repositories) in a 3D space using Next.js and React Three Fiber.
 
 ## Features
 
-- **Interactive 3D Visualizations:** Explore GitHub profiles and repositories in a rich 3D environment.
+- **Interactive 3D Visualizations:** Explore GitHub repositories in a rich 3D environment.
 - **Modern Tech Stack:** Built with Next.js 16, React 19, Three.js, and Tailwind CSS.
 - **Responsive Design:** Works seamlessly across devices.
 
