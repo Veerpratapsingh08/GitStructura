@@ -19,8 +19,8 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
   const title = `${repo} | CodeCity`;
   const description = `Explore the 3D code architecture of ${repo} on CodeCity.`;
-  // Pointing to our new API route that will generate the image dynamically
-  const ogUrl = `/api/og?repo=${encodeURIComponent(repo)}`;
+  // Fallback to static logo for Vercel Edge limit safety
+  const ogUrl = '/logo.png';
 
   return {
     title,

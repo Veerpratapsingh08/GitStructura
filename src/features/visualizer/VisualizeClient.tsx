@@ -3,8 +3,8 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { CityScene } from "@/features/visualizer/CityScene";
 import { RepoFile, fetchRepoTree, parseRepoUrl } from "@/features/visualizer/Fetcher";
-import { Loader2 } from "lucide-react";
 import ThemeToggle from '@/components/ThemeToggle';
+import Loader from '@/components/Loader';
 import Link from "next/link";
 import Image from "next/image";
 
@@ -283,8 +283,8 @@ export default function VisualizeClient() {
                           </div>
                           
                           {loading && (
-                               <div className="mt-12 flex items-center gap-3 text-[var(--text-primary)] bg-[var(--bg-secondary)] px-6 py-2.5 rounded-full border border-[var(--border-color)] shadow-sm relative z-10">
-                                   <Loader2 className="animate-spin w-4 h-4" />
+                               <div className="mt-12 flex items-center gap-3 text-[var(--text-primary)] bg-[var(--bg-secondary)] px-6 py-4 rounded-full border border-[var(--border-color)] shadow-sm relative z-10">
+                                   <div className="scale-75"><Loader /></div>
                                    <span className="font-mono text-xs uppercase tracking-widest">Fetching data...</span>
                                </div>
                           )}
@@ -298,8 +298,8 @@ export default function VisualizeClient() {
                  {loading && data && (
                      <div className="absolute inset-0 bg-[var(--bg-primary)]/80 backdrop-blur-sm z-50 flex items-center justify-center">
                          <div className="flex flex-col items-center bg-[var(--bg-secondary)] p-6 rounded-lg border border-[var(--border-color)] shadow-lg">
-                             <Loader2 className="animate-spin text-[var(--text-primary)] w-8 h-8 mb-4" />
-                             <p className="text-[var(--text-primary)] font-mono text-sm tracking-widest uppercase">Updating...</p>
+                             <Loader />
+                             <p className="mt-4 text-[var(--text-primary)] font-mono text-sm tracking-widest uppercase">Updating...</p>
                          </div>
                      </div>
                  )}

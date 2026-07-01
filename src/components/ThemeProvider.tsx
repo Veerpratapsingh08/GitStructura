@@ -19,6 +19,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const savedTheme = localStorage.getItem("codecity-theme") as Theme;
     if (savedTheme === "light" || savedTheme === "dark") {
       setTheme(savedTheme);
+    } else {
+      const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+      setTheme(systemDark ? "dark" : "light");
     }
     setMounted(true);
   }, []);

@@ -7,6 +7,7 @@
   --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 4s ease-in-out infinite;
   --animate-slide-up: slideUp 0.5s ease-out forwards;
+  --animate-loader-bar: loader-bar 1s ease-in-out infinite;
 }
 
 :root {
@@ -65,4 +66,9 @@ body {
 @keyframes slideUp {
   from { transform: translateY(15px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes loader-bar {
+  0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+  50% { transform: scaleY(1); opacity: 1; }
 }

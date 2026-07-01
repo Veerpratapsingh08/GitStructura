@@ -4,6 +4,7 @@ import "./globals.css";
 import CookieConsent from "./CookieConsent";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Analytics } from "@/components/Analytics";
+import SplashScreen from "@/components/SplashScreen";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-space",
@@ -22,6 +23,17 @@ export const metadata: Metadata = {
     icon: '/logo.png',
     apple: '/logo.png',
   },
+  openGraph: {
+    title: "GitHub Visualizer",
+    description: "Visualize your codebase like never before",
+    images: [{ url: '/logo.png' }],
+  },
+  twitter: {
+    card: 'summary',
+    title: "GitHub Visualizer",
+    description: "Visualize your codebase like never before",
+    images: ['/logo.png'],
+  }
 };
 
 export default function RootLayout({
@@ -38,6 +50,7 @@ export default function RootLayout({
         className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-background text-foreground`}
       >
         <ThemeProvider>
+          <SplashScreen />
           {children}
           <CookieConsent />
           <Analytics />
