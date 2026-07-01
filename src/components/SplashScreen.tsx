@@ -9,7 +9,7 @@ export default function SplashScreen() {
 
   useEffect(() => {
     // Set the flag
-    sessionStorage.setItem('codecity-splash', 'true');
+    sessionStorage.setItem('gitstructura-splash', 'true');
     
     // Animate out after 1.5 seconds
     const fadeTimer = setTimeout(() => {

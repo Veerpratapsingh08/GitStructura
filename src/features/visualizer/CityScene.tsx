@@ -160,6 +160,7 @@ const CitySceneRenderer = ({
 };
 
 export const CityScene = ({ files }: { files: RepoFile[] }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [hoveredNode, setHoveredNode] = useState<TreemapNode | null>(null);
   const { theme } = useTheme();
   

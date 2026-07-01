@@ -8,8 +8,9 @@ export function Analytics() {
 
   useEffect(() => {
     // Check initial consent status
-    const consent = localStorage.getItem('codecity-cookie-consent');
+    const consent = localStorage.getItem('gitstructura-cookie-consent');
     if (consent === 'true') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setHasConsent(true);
     }
     

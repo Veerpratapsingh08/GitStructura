@@ -12,13 +12,13 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 
   if (!repo) {
     return {
-      title: 'Visualize | CodeCity',
+      title: 'Visualize | GitStructura',
       description: 'Transform GitHub repositories into interactive 3D cities.',
     };
   }
 
-  const title = `${repo} | CodeCity`;
-  const description = `Explore the 3D code architecture of ${repo} on CodeCity.`;
+  const title = `${repo} | GitStructura`;
+  const description = `Explore the 3D code architecture of ${repo} on GitStructura.`;
   // Fallback to static logo for Vercel Edge limit safety
   const ogUrl = '/logo.png';
 
@@ -46,7 +46,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   };
 }
 
-export default async function VisualizePage(props: Props) {
+export default async function VisualizePage() {
   // We can pass resolved searchParams if needed, but VisualizeClient reads from window.location anyway.
   return <VisualizeClient />;
 }

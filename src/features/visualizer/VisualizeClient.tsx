@@ -22,9 +22,9 @@ export default function VisualizeClient() {
 
   useEffect(() => {
     try {
-      const saved = JSON.parse(localStorage.getItem('codecity-recent-searches') || '[]');
+      const saved = JSON.parse(localStorage.getItem('gitstructura-recent-searches') || '[]');
       if (Array.isArray(saved)) setRecentSearches(saved);
-    } catch (e) {
+    } catch {
       console.error('Failed to parse recent searches');
     }
   }, []);
@@ -134,12 +134,12 @@ export default function VisualizeClient() {
       
       // Update recent searches
       const repoName = `${parsed.owner}/${parsed.repo}`;
-      const saved = JSON.parse(localStorage.getItem('codecity-recent-searches') || '[]');
+      const saved = JSON.parse(localStorage.getItem('gitstructura-recent-searches') || '[]');
       const updated = [repoName, ...saved.filter((r: string) => r !== repoName)].slice(0, 5);
-      localStorage.setItem('codecity-recent-searches', JSON.stringify(updated));
+      localStorage.setItem('gitstructura-recent-searches', JSON.stringify(updated));
       setRecentSearches(updated);
-    } catch (err: any) {
-      setError(err.message || "Failed to fetch repository");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to fetch repository");
     } finally {
       setLoading(false);
     }
@@ -200,8 +200,8 @@ export default function VisualizeClient() {
       <header className="flex items-center justify-between border-b border-[var(--border-color)] bg-[var(--bg-primary)] px-6 py-3 z-50 shrink-0">
         <div className="flex-1">
           <Link href="/" className="flex items-center gap-3 w-fit">
-            <Image src="/logo.png" alt="GitHub Visualizer" width={32} height={32} className="rounded-lg grayscale" unoptimized />
-            <h2 className="text-[var(--text-primary)] text-xl font-bold leading-tight tracking-tight hidden md:block">CodeCity</h2>
+            <Image src="/logo.png" alt="GitStructura" width={32} height={32} className="rounded-lg grayscale" unoptimized />
+            <h2 className="text-[var(--text-primary)] text-xl font-bold leading-tight tracking-tight hidden md:block">GitStructura</h2>
           </Link>
         </div>
         
@@ -229,7 +229,7 @@ export default function VisualizeClient() {
 
                           <div className="relative z-10 flex flex-col items-center">
                               <div className="p-4 rounded-xl mb-6 w-fit bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-sm">
-                                   <Image src="/logo.png" alt="GitHub Visualizer" width={64} height={64} className="grayscale mix-blend-luminosity" />
+                                   <Image src="/logo.png" alt="GitStructura" width={64} height={64} className="grayscale mix-blend-luminosity" />
                               </div>
                               <h1 className="text-4xl font-bold mb-3 tracking-tight">Build your code city.</h1>
                               <p className="max-w-md text-lg mb-8 text-[var(--text-secondary)]">Paste a GitHub URL to transform any repository into an interactive 3D metropolis.</p>
@@ -380,7 +380,7 @@ export default function VisualizeClient() {
                 </div>
             )}
 
-            {data && (data as any).isCapped && !focusMode && (
+            {data && (data as RepoFile[] & { isCapped?: boolean }).isCapped && !focusMode && (
                 <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
                     <div className="bg-yellow-500/10 text-yellow-700 dark:text-yellow-400 border border-yellow-500/30 px-4 py-2 rounded-md text-xs font-medium flex items-center gap-2 shadow-sm animate-in slide-in-from-top-4 fade-in-0 duration-500">
                         <span className="material-symbols-outlined text-[16px]">warning</span>
@@ -394,7 +394,7 @@ export default function VisualizeClient() {
                     <div className="bg-[var(--bg-primary)] text-[var(--text-secondary)] text-[10px] px-4 py-2 rounded-md border border-[var(--border-color)] font-mono flex items-center gap-3 shadow-sm uppercase tracking-widest">
                         <span className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-[var(--text-primary)]"></span>Live</span>
                         <span className="opacity-30">|</span>
-                        <span>Objects: {stats?.totalFiles.toLocaleString()} {(data as any).isCapped && <span className="text-yellow-600 dark:text-yellow-500 font-bold ml-1">(CAPPED)</span>}</span>
+                        <span>Objects: {stats?.totalFiles.toLocaleString()} {(data as RepoFile[] & { isCapped?: boolean }).isCapped && <span className="text-yellow-600 dark:text-yellow-500 font-bold ml-1">(CAPPED)</span>}</span>
                         <span className="opacity-30">|</span>
                         <span>Press ? for shortcuts</span>
                     </div>

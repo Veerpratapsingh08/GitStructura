@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useGitStore } from "./GitEngine";
 import clsx from "clsx";
-import { useTheme } from "@/components/ThemeProvider";
 
 // Smart suggestions for common mistakes
 const SUGGESTIONS: Record<string, string> = {
@@ -50,7 +49,6 @@ export const Terminal = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const idleTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const { theme } = useTheme();
   const git = useGitStore();
 
   // Sync input from store
@@ -421,7 +419,7 @@ export const Terminal = () => {
         default:
           return [{ type: 'error', content: `git: '${subCommand}' is not a git command. See 'help' for available commands.` }];
       }
-    } catch (e) {
+    } catch {
       return [{ type: 'error', content: "Error executing command" }];
     }
   };

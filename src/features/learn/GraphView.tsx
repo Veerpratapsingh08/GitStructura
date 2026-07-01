@@ -18,6 +18,7 @@ export const GraphView = () => {
       const timer = setTimeout(() => setNewNodeId(null), 1500);
       return () => clearTimeout(timer);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes.length]);
 
   // Memoize positions calculation
@@ -25,16 +26,9 @@ export const GraphView = () => {
     const pos: Record<string, { x: number; y: number; color: string }> = {};
 
     nodes.forEach((node, i) => {
-      let y = 0;
       let color = "#3b82f6"; // blue-500
 
-      if (node.parentIds.length > 0) {
-        const pid = node.parentIds[0];
-        const pPos = pos[pid];
-        if (pPos) {
-          y = pPos.y;
-        }
-      }
+
 
       // Merge commits: use average Y of parents
       if (node.parentIds.length > 1) {
@@ -44,7 +38,7 @@ export const GraphView = () => {
       pos[node.id] = { x: 60 + i * 90, y: 0, color };
     });
     return pos;
-  }, [nodes, branches]);
+  }, [nodes]);
 
   // Empty state
   if (!isInitialized) {
@@ -105,7 +99,7 @@ export const GraphView = () => {
             const pos = positions[node.id];
             const isHead = HEAD === node.id;
             const isNew = newNodeId === node.id;
-            const branchLabel = Object.entries(branches).find(([_, id]) => id === node.id)?.[0];
+            const branchLabel = Object.entries(branches).find(([, id]) => id === node.id)?.[0];
             const isMerge = node.parentIds.length > 1;
 
             return (

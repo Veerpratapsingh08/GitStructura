@@ -1,4 +1,4 @@
-# Contributing to GitHub Visualizer
+# Contributing to GitStructura
 
 Thanks for your interest in contributing! This document explains how to get started.
 
@@ -117,4 +117,4 @@ All contributors are added to the README. Significant contributions may be highl
 
 ---
 
-Thanks for helping make GitHub Visualizer better! 🎉
+Thanks for helping make GitStructura better! 🎉

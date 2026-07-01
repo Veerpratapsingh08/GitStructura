@@ -14,8 +14,8 @@ export default function LearnPage() {
     <div className="flex flex-col h-screen overflow-hidden relative text-[var(--text-primary)] bg-[var(--bg-primary)] font-sans transition-colors duration-300">
       <header className="flex items-center justify-between border-b border-[var(--border-color)] px-6 py-3 z-50 shrink-0 bg-[var(--bg-primary)]">
         <Link href="/" className="flex items-center gap-3">
-          <Image src="/logo.png" alt="GitHub Visualizer" width={32} height={32} className="rounded-lg grayscale" unoptimized />
-          <h2 className="text-xl font-bold leading-tight tracking-tight">CodeCity <span className="text-[var(--text-secondary)] font-normal">Learn</span></h2>
+          <Image src="/logo.png" alt="GitStructura" width={32} height={32} className="rounded-lg grayscale" unoptimized />
+          <h2 className="text-xl font-bold leading-tight tracking-tight">GitStructura <span className="text-[var(--text-secondary)] font-normal">Learn</span></h2>
         </Link>
         <div className="flex items-center gap-4">
           <ThemeToggle />

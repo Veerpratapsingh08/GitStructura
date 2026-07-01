@@ -16,8 +16,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("codecity-theme") as Theme;
+    const savedTheme = localStorage.getItem("gitstructura-theme") as Theme;
     if (savedTheme === "light" || savedTheme === "dark") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTheme(savedTheme);
     } else {
       const systemDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -34,7 +35,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       document.body.classList.add("theme-light");
       document.body.classList.remove("theme-dark");
     }
-    localStorage.setItem("codecity-theme", theme);
+    localStorage.setItem("gitstructura-theme", theme);
   }, [theme]);
 
   const toggleTheme = () => {

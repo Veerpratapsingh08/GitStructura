@@ -3,11 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
-  const router = useRouter();
 
   return (
     <div className="flex flex-col min-h-screen font-sans bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
@@ -18,8 +16,8 @@ export default function Home() {
 
       <header className="flex items-center justify-between border-b border-[var(--border-color)] px-6 py-4 md:px-10 lg:px-40 sticky top-0 z-50 bg-[var(--bg-primary)]/90 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <Image src="/logo.png" alt="GitHub Visualizer" width={32} height={32} className="rounded-lg grayscale" unoptimized />
-          <h2 className="text-xl font-bold leading-tight tracking-tight">CodeCity</h2>
+          <Image src="/logo.png" alt="GitStructura" width={32} height={32} className="rounded-lg grayscale" unoptimized />
+          <h2 className="text-xl font-bold leading-tight tracking-tight">GitStructura</h2>
         </div>
         <div className="flex flex-1 justify-end gap-4 items-center">
           <ThemeToggle />

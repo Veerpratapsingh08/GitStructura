@@ -8,20 +8,21 @@ export default function CookieConsent() {
 
   useEffect(() => {
     // Check if the user has already dismissed the consent
-    const consent = localStorage.getItem('codecity-cookie-consent');
+    const consent = localStorage.getItem('gitstructura-cookie-consent');
     if (!consent) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShow(true);
     }
   }, []);
 
   const handleAccept = () => {
-    localStorage.setItem('codecity-cookie-consent', 'true');
+    localStorage.setItem('gitstructura-cookie-consent', 'true');
     window.dispatchEvent(new Event('cookie-consent-granted'));
     setShow(false);
   };
 
   const handleDecline = () => {
-    localStorage.setItem('codecity-cookie-consent', 'declined');
+    localStorage.setItem('gitstructura-cookie-consent', 'declined');
     setShow(false);
   };
 
@@ -36,7 +37,7 @@ export default function CookieConsent() {
             <strong className="text-white text-base">We respect your privacy</strong>
           </p>
           <p>
-            CodeCity uses Microsoft Clarity analytics to understand how you use our application and improve your experience. We do not sell your data, and your Personal Access Tokens (PAT) remain strictly local. By clicking Accept, you consent to our use of analytics cookies. Read our <Link href="/privacy" className="text-primary hover:underline underline-offset-2">Privacy Policy</Link> for more details.
+            GitStructura uses Microsoft Clarity analytics to understand how you use our application and improve your experience. We do not sell your data, and your Personal Access Tokens (PAT) remain strictly local. By clicking Accept, you consent to our use of analytics cookies. Read our <Link href="/privacy" className="text-primary hover:underline underline-offset-2">Privacy Policy</Link> for more details.
           </p>
         </div>
         <div className="flex shrink-0 gap-3">

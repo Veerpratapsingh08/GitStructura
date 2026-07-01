@@ -1,10 +1,10 @@
-# GitHub Visualizer
+# GitStructura
 
 **See your code. Understand your structure.**
 
 A visual developer tool that transforms GitHub repositories into interactive 2.5D treemaps and teaches Git through a hands-on terminal simulator.
 
-![GitHub Visualizer Demo](./docs/screenshots/hero.png)
+![GitStructura Demo](./docs/screenshots/hero.png)
 
 [**🌐 Live Demo**](https://github-visualizer-olive.vercel.app/) &nbsp;&nbsp; 
 

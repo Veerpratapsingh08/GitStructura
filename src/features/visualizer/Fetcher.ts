@@ -56,7 +56,7 @@ export const fetchRepoTree = async (owner: string, repo: string, token?: string)
     const topBlobs = new Set(blobs.slice(0, MAX_FILES).map(b => b.path));
     files = files.filter(f => f.type === 'tree' || topBlobs.has(f.path));
     
-    (files as any).isCapped = true;
+    (files as RepoFile[] & { isCapped?: boolean }).isCapped = true;
   }
 
   return files;
@@ -69,7 +69,7 @@ export const parseRepoUrl = (url: string) => {
     if (parts.length >= 2) {
       return { owner: parts[0], repo: parts[1] };
     }
-  } catch (e) {
+  } catch {
 
     const parts = url.split("/").filter(Boolean);
     if (parts.length === 2) {

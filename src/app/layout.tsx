@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-page-custom-font */
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "./globals.css";
@@ -17,20 +18,21 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "GitHub Visualizer",
+  metadataBase: new URL("https://gitstructura.com"),
+  title: "GitStructura",
   description: "Visualize your codebase like never before",
   icons: {
     icon: '/logo.png',
     apple: '/logo.png',
   },
   openGraph: {
-    title: "GitHub Visualizer",
+    title: "GitStructura",
     description: "Visualize your codebase like never before",
     images: [{ url: '/logo.png' }],
   },
   twitter: {
     card: 'summary',
-    title: "GitHub Visualizer",
+    title: "GitStructura",
     description: "Visualize your codebase like never before",
     images: ['/logo.png'],
   }

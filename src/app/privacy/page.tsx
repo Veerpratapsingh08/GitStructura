@@ -18,17 +18,18 @@ export default function PrivacyPolicy() {
   const [consentStatus, setConsentStatus] = useState<string | null>(null);
 
   useEffect(() => {
-    setConsentStatus(localStorage.getItem('codecity-cookie-consent') || 'unknown');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setConsentStatus(localStorage.getItem('gitstructura-cookie-consent') || 'unknown');
   }, []);
 
   const handleRevoke = () => {
-    localStorage.setItem('codecity-cookie-consent', 'declined');
+    localStorage.setItem('gitstructura-cookie-consent', 'declined');
     setConsentStatus('declined');
     window.location.reload(); // Reload to remove tracking script
   };
 
   const handleGrant = () => {
-    localStorage.setItem('codecity-cookie-consent', 'true');
+    localStorage.setItem('gitstructura-cookie-consent', 'true');
     setConsentStatus('true');
     window.dispatchEvent(new Event('cookie-consent-granted'));
     window.location.reload();
@@ -48,8 +49,8 @@ export default function PrivacyPolicy() {
       <div className="border-b border-[var(--border-color)] bg-[var(--bg-primary)] sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 w-fit group">
-            <Image src="/logo.png" alt="GitHub Visualizer" width={32} height={32} className="rounded-lg grayscale opacity-80 group-hover:opacity-100 transition-opacity" unoptimized />
-            <h2 className="text-[var(--text-primary)] text-xl font-bold leading-tight tracking-tight">CodeCity</h2>
+            <Image src="/logo.png" alt="GitStructura" width={32} height={32} className="rounded-lg grayscale opacity-80 group-hover:opacity-100 transition-opacity" unoptimized />
+            <h2 className="text-[var(--text-primary)] text-xl font-bold leading-tight tracking-tight">GitStructura</h2>
           </Link>
           <div className="flex items-center gap-4">
             <ThemeToggle />
@@ -95,7 +96,7 @@ export default function PrivacyPolicy() {
             </h2>
             <div className="prose prose-slate dark:prose-invert max-w-none text-[var(--text-secondary)]">
               <p className="text-lg leading-relaxed text-[var(--text-primary)] mb-6 font-medium">
-                At CodeCity, we believe in transparency and absolute respect for your privacy. We build developer tools, not data harvesting networks.
+                At GitStructura, we believe in transparency and absolute respect for your privacy. We build developer tools, not data harvesting networks.
               </p>
               <p>
                 This policy outlines exactly how we handle your data when you use our application. We strictly limit data collection to essential analytics designed solely to improve your architectural visualization experience. There are no hidden third-party trackers, no ad networks, and absolutely no reselling of your information.
@@ -114,7 +115,7 @@ export default function PrivacyPolicy() {
               </p>
             </div>
             <p>
-              Your PAT is stored exclusively in your browser's local memory (specifically <code>localStorage</code>) and is only ever sent directly from your local machine to the official GitHub API endpoints (<code>api.github.com</code>). If you clear your browser data, your token is permanently gone.
+              Your PAT is stored exclusively in your browser&apos;s local memory (specifically <code>localStorage</code>) and is only ever sent directly from your local machine to the official GitHub API endpoints (<code>api.github.com</code>). If you clear your browser data, your token is permanently gone.
             </p>
           </section>
 
@@ -140,7 +141,7 @@ export default function PrivacyPolicy() {
               <LineChart className="w-6 h-6" /> Analytics & Tracking
             </h2>
             <p className="mb-4">
-              To understand how developers use CodeCity and to fix UX issues, we use Microsoft Clarity. This is strictly opt-in via our cookie consent banner.
+              To understand how developers use GitStructura and to fix UX issues, we use Microsoft Clarity. This is strictly opt-in via our cookie consent banner.
             </p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
               <div className="border border-[var(--border-color)] rounded-lg p-5">
@@ -177,7 +178,7 @@ export default function PrivacyPolicy() {
               <Github className="w-6 h-6" /> Open Source Transparency
             </h2>
             <p>
-              CodeCity is fully open source. We believe that security and privacy should be verifiable, not just promised. If you have any concerns about how data is handled, you are encouraged to inspect our repository, review the network requests in your browser dev tools, or run the application locally on your own machine.
+              GitStructura is fully open source. We believe that security and privacy should be verifiable, not just promised. If you have any concerns about how data is handled, you are encouraged to inspect our repository, review the network requests in your browser dev tools, or run the application locally on your own machine.
             </p>
             <div className="mt-8">
               <a href="https://github.com/Veerpratapsingh08/github-visualizer" target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 bg-[var(--text-primary)] text-[var(--bg-primary)] px-6 py-3 rounded-md font-semibold text-sm hover:opacity-90 transition-opacity shadow-sm">
