@@ -6,7 +6,7 @@ A visual developer tool that transforms GitHub repositories into interactive 2.5
 
 ![GitStructura Demo](./docs/screenshots/hero.png)
 
-[**🌐 Live Demo**](https://github-visualizer-olive.vercel.app/) &nbsp;&nbsp; 
+[**🌐 Live Demo**](https://gitstructura.vercel.app/) &nbsp;&nbsp; 
 
 ---
 

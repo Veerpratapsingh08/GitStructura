@@ -18,7 +18,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gitstructura.com"),
+  metadataBase: new URL("https://gitstructura.vercel.app"),
   title: "GitStructura",
   description: "Visualize your codebase like never before",
   icons: {
